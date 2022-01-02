@@ -1,10 +1,13 @@
 const express = require('express')
 const helmet = require('helmet')
 const cors = require('cors')
+const path = require("path");
+
 
 const normalDistRouter = require('../api/normalDist/normalDistRouter')
-
 const server = express()
+
+server.use(express.static(path.resolve(__dirname, "./client/build")));
 server.use(express.json())
 server.use(helmet())
 server.use(cors())

@@ -12,7 +12,8 @@
     "databaseh": "heroku pg:psql -a nd-deploy",
     "seedh": "heroku run knex seed:run -a nd-deploy",
     "test": "cross-env NODE_ENV=testing jest --verbose --runInBand",
-    "deploy": "git push heroku main"
+    "deploy": "git push heroku main",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "engines": {
     "node": "16.13.1"
