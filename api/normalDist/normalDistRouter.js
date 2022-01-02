@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/pool_block_counter', async (req, res, next) => {
-    let poolName = req.query.pool
+    let poolName = req.query.pool || 'SlushPool'
     let today = new Date();
     let lastMonth = new Date();
     let prev = moment().subtract(1, "months").startOf("months").toDate().toISOString()
