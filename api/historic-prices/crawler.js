@@ -24,9 +24,14 @@ const scrape = async () => {
         })
 
         $spy("#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)").each((_idx, el) => {
+            let dateChecker = []
             let spyDate = $spy(el).text()
             let spyPrice = $spy(el).next().next().next().next().next().text()
-            spyData.push({ spy_date: spyDate, spy_price: spyPrice !== null ? parseFloat(spyPrice) : spyPrice})
+
+            //checks for the dividend dupe date
+            dateChecker.push(spyDate)            
+            dateChecker.map(x => spyData.map(s => s.spy_date).indexOf(x) === -1 ? spyData.push({ spy_date: spyDate, spy_price: spyPrice !== null ? parseFloat(spyPrice) : spyPrice}) : "")
+        
         })
 
         $gld("#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)").each((_idx, el) => {
