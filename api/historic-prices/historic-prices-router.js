@@ -1,7 +1,8 @@
 const router = require('express').Router()
 const HistoricPrice = require('./historic-prices-model')
+const {scrapeDates} = require('./historic-prices-middleware')
 
-router.get('/:date_string?', async (req, res, next) => {
+router.get('/:date_string?', scrapeDates, async (req, res, next) => {
     const startDate = req.query.startDate
     const endDate = req.query.endDate
     try {
