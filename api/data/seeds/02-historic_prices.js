@@ -3,16 +3,17 @@ const spy = require('../json/spy_historic.json')
 const gld = require('../json/gld_historic.json')
 
 // finds the missing weekend dates from the spy and gld seed and adds the btc date and a null price. 
-btc.map(x => spy.map(s => s.spy_date).indexOf(x.btc_date)  === -1 ? spy.push({spy_date: x.btc_date, spy_price: null}) : "")
-btc.map(x => gld.map(s => s.gld_date).indexOf(x.btc_date)  === -1 ? gld.push({gld_date: x.btc_date, gld_price: null}) : "")
+let newSpy = [...spy]
+let newGld = [...gld]
+btc.map(x => spy.map(s => s.spy_date).indexOf(x.btc_date)  === -1 ? newSpy.push({spy_date: x.btc_date, spy_price: null}) : "")
+btc.map(x => gld.map(s => s.gld_date).indexOf(x.btc_date)  === -1 ? newGld.push({gld_date: x.btc_date, gld_price: null}) : "")
 
 let dates = btc.map(x => x.btc_date),
 btc_prices = btc.map(x => x.btc_price),
-spy_prices = spy.map(x => x.spy_price),
-gld_prices = gld.map(x => x.gld_price)
+spy_prices = newSpy.map(x => x.spy_price),
+gld_prices = newGld.map(x => x.gld_price)
 
 const data = dates.map((date, idx) => {
-
   return {
     date,
     btc_price: btc_prices[idx],
