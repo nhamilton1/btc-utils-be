@@ -10,8 +10,8 @@ const scrapeDates = async (req, res, next) => {
         let mostRecentDate = dateCheck[dateCheck.length -1].date
         let currDate = moment(new Date()).format('YYYY-MM-DD')
         if (mostRecentDate !== currDate){
-            const sp = await scrape(mostRecentDate)
-            console.log(sp)
+            const scrapingForUpdates = await scrape(mostRecentDate)
+            await Dates.add(scrapingForUpdates)
             next()
         } else {
             next()
