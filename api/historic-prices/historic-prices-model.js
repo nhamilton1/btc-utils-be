@@ -25,7 +25,16 @@ const add = async (item) => {
   return newItemObject
 };
 
+const getLastRow = async () => {
+    const lastRow = await db("historical_prices")
+    .select("date", "btc_price", "gld_price", "spy_price")
+    .orderBy("date", "DESC")
+    .limit(1)
+    return lastRow
+}
+
 module.exports = {
   findBetweenDates,
   add,
+  getLastRow,
 };
