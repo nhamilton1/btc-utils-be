@@ -3,7 +3,10 @@ const cheerio = require('cheerio');
 const moment = require('moment')
 
 const scrape = async () => {
+   
     try {
+        let mostRecentDate = moment("2022-01-04").format('MMM DD YYYY')
+
         const { data: dataBtc } = await axios.get('https://finance.yahoo.com/quote/BTC-USD/history/')
         const { data: dataSpy } = await axios.get('https://finance.yahoo.com/quote/SPY/history/')
         const { data: dataGld } = await axios.get('https://finance.yahoo.com/quote/GLD/history/')
@@ -18,10 +21,18 @@ const scrape = async () => {
         let gldData = []
 
         $btc("#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr> td:nth-child(1)").each((_idx, el) => {
+
             let btcDate = $btc(el).text()
             let btcPrice = $btc(el).next().next().next().next().next().text()
-            btcData.push({ btc_date: btcDate, btc_price: parseFloat(btcPrice.replace(/,/g, ''))})
+
+            console.log((new Date(btcDate).getTime() / 1000))
+            if((new Date(btcDate).getTime() / 1000) > (new Date(mostRecentDate).getTime() / 1000)) {    
+                btcData.push({ btc_date: btcDate, btc_price: parseFloat(btcPrice.replace(/,/g, ''))})
+            }
+
+
         })
+        console.log(btcData)
 
         $spy("#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)").each((_idx, el) => {
             let dateChecker = []
@@ -31,7 +42,7 @@ const scrape = async () => {
             //checks for the dividend dupe date
             dateChecker.push(spyDate)            
             dateChecker.map(x => spyData.map(s => s.spy_date).indexOf(x) === -1 ? spyData.push({ spy_date: spyDate, spy_price: spyPrice !== null ? parseFloat(spyPrice) : spyPrice}) : "")
-        
+            
         })
 
         $gld("#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)").each((_idx, el) => {
@@ -69,5 +80,8 @@ const scrape = async () => {
     }
 }
 
-scrape().then((tableData) => console.log(tableData))
+scrape().then((tableData) => tableData)
 
+module.exports={
+    scrape
+}
