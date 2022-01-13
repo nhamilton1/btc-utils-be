@@ -43,5 +43,6 @@ normal distribution for mining pools:
 | ------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | [GET]  | /api/nd/pool_block_counter | returns ~30 days of amount of blocks found by the pool. The key is the date and the value is amount of blocks found on that date |
 
-this information is coming from:
-https://btc.com/service/poolBlockCounterPerDay?start=${date_here}&end=${date_here}&pool=${pool_name_here}
+this information is coming from: btc.com
+example: https://btc.com/service/poolBlockCounterPerDay?start=${date_here}&end=${date_here}&pool=${pool_name_here}
+         https://btc.com/service/poolBlockCounterPerDay?start=20211201&end=20220113&pool=SlushPool
