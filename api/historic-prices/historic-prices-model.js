@@ -10,9 +10,10 @@ const findBetweenDates = async (startDate, endDate) => {
 };
 
 const sqlRawFindBetweenDates = async (startDate, endDate) => {
-  const dates = await db.with(
+  const dates = await db
+    .with(
       "historical_prices",
-      ["date", "btc_price","spy_price","gld_price"],
+      ["date", "btc_price", "spy_price", "gld_price"],
       db.raw(
         'SELECT date, btc_price, spy_price, gld_price, MAX(CASE WHEN spy_price IS NOT NULL THEN date END) OVER(ORDER BY date ROWS UNBOUNDED PRECEDING) AS spy, MAX(CASE WHEN gld_price IS NOT NULL THEN date END) OVER( ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld from "historical_prices"'
       )
@@ -27,7 +28,7 @@ const sqlRawFindBetweenDates = async (startDate, endDate) => {
         "MAX(gld_price) OVER( PARTITION BY gld ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld_price"
       )
     )
-    .from('historical_prices')
+    .from("historical_prices")
     .where("date", ">=", startDate)
     .where("date", "<=", endDate)
     .orderBy("date", "ASC");
