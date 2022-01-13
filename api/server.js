@@ -12,7 +12,7 @@ server.use(express.json())
 server.use(helmet())
 server.use(cors())
 
-server.use('/', normalDistRouter)
+server.use('/api/nd', normalDistRouter)
 server.use('/api/historic_prices', historicPriceRouter)
 
 

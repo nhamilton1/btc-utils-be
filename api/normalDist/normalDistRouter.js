@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const moment = require('moment')
 
-router.get('/', (req, res) => {
+router.get('/sanity_test', (req, res) => {
     res.json('sanity test')
 })
 
