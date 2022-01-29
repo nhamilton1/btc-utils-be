@@ -4,7 +4,6 @@ const moment = require("moment");
 
 const scrape = async (mostRecentDate) => {
   try {
-
     mostRecentDate = moment(mostRecentDate).format("MMM DD YYYY");
 
     const { data: dataBtc } = await axios.get(
@@ -131,7 +130,6 @@ const scrape = async (mostRecentDate) => {
     console.error(err);
   }
 };
-
 
 module.exports = {
   scrape,
