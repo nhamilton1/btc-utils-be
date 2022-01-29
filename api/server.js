@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const normalDistRouter = require("../api/normalDist/normalDistRouter");
 const historicPriceRouter = require("./historic-prices/historic-prices-router");
+const asicRouter = require('./miner-scrape/asic-miners-router')
 
 const server = express();
 
@@ -13,6 +14,8 @@ server.use(cors());
 
 server.use("/api/nd", normalDistRouter);
 server.use("/api/historic_prices", historicPriceRouter);
+server.use("/api/asics", asicRouter);
+
 
 server.use((err, req, res, next) => {// eslint-disable-line
   res.status(err.status || 500).json({

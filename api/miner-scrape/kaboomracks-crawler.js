@@ -1,5 +1,8 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const crypto = require("crypto");
+
+const sha1 = (x) => crypto.createHash("sha1").update(x, "utf8").digest("hex");
 
 const kaboomracksScraper = async () => {
   try {
@@ -18,46 +21,75 @@ const kaboomracksScraper = async () => {
       const individualSales = minerData.match(/(?=[—]\s*).*?(?=\s*each —)/gs);
 
       if (minerData.includes("Antminer S") && individualSales != null) {
+        let seller = "Kaboomracks";
+        //this will find between the given strings, for exmample here:
+        //will find between Bitmain Antminer S and for
+        let asic = minerData.match(
+          /(?=Bitmain Antminer S\s*).*?(?=\s*for)/gs
+        )[0];
+        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let date = minerData
+          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+          //removes the invalid chars
+          .replace(/[^\x20-\x7E]/g, "");
+        let id = seller + asic + price + date;
+
         asics.push({
-          //this will find between the given strings, for exmample here:
-          //will find between Bitmain Antminer S and for
-          seller: 'Kaboomracks',
-          asic: minerData.match(/(?=Bitmain Antminer S\s*).*?(?=\s*for)/gs)[0],
-          price: Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]),
-          date: minerData
-            .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-            // this removes the the non ascii chars at the end
-            .replace(/[^\x20-\x7E]/g, ""),
+          seller,
+          asic,
+          price,
+          date,
+          id: sha1(id),
         });
       }
 
       if (minerData.includes("Whatsminer M") && individualSales != null) {
+        let seller = "Kaboomracks";
+        let asic = minerData.match(/(?=Whatsminer M\s*).*?(?=\s*for)/gs)[0];
+        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let date = minerData
+          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+          .replace(/[^\x20-\x7E]/g, "");
+        let id = seller + asic + price + date;
+
         asics.push({
-          seller: 'Kaboomracks',
-          asic: minerData.match(/(?=Whatsminer M\s*).*?(?=\s*for)/gs)[0],
-          price: Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]),
-          date: minerData
-            .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-            .replace(/[^\x20-\x7E]/g, ""),
+          seller,
+          asic,
+          price,
+          date,
+          id: sha1(id),
         });
       }
 
       if (minerData.includes("Canaan A") && individualSales != null) {
+        let seller = "Kaboomracks";
+        let asic = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
+        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let date = minerData
+          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+          .replace(/[^\x20-\x7E]/g, "");
+        let id = seller + asic + price + date;
+
         asics.push({
-          seller: 'Kaboomracks',
-          asic: minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0],
-          price: Number(minerData.match(/(?=[$]\s*).*?(?=\s*each —)/gs)[0]),
-          date: minerData
-            .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-            .replace(/[^\x20-\x7E]/g, ""),
+          seller,
+          asic,
+          price,
+          date,
+          id: sha1(id),
         });
       }
     });
 
-    return asics
+    //filters for dups
+    const ids = asics.map((a) => a.id);
+    const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
+
+    return filtered;
   } catch (err) {
     console.error(err);
   }
 };
 
-kaboomracksScraper();
+module.exports = {
+  kaboomracksScraper,
+};
