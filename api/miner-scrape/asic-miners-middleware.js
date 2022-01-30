@@ -1,17 +1,20 @@
 const Asics = require("./asic-miners-model");
 const { kaboomracksScraper } = require("./kaboomracks-crawler");
+const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
 
 const asicData = async (req, res, next) => {
   try {
-    const kaboom = await Asics.getAllIds();
-    const scrapeForData = await kaboomracksScraper();
-    const dupCheck = scrapeForData.filter(
+    const asic = await Asics.getAllIds();
+    const scrapeForKaboomData = await kaboomracksScraper();
+    const scrapeForMFBData = await minefarmbuyScraper();
+    const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
+    const dupCheck = allData.filter(
       (scapeData) =>
-        !kaboom.find((kaboomData) => scapeData.id === kaboomData.id)
+        !asic.find((allAsicData) => scapeData.id === allAsicData.id)
     );
 
-    if (kaboom.length === 0) {
-      await Asics.add(scrapeForData);
+    if (asic.length === 0) {
+      await Asics.add(allData);
       next();
     } else if (dupCheck.length > 0) {
       await Asics.add(dupCheck);
