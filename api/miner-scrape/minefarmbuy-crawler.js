@@ -34,9 +34,9 @@ const minefarmbuyScraper = async () => {
     const minefarmbuyData = [];
 
     //loops through all of the filtered links
-    for (let i = 0; i < uniqUrls.length; i++) {
+    for (const uurl of uniqUrls) {
       try {
-        const url = uniqUrls[i];
+        const url = uurl;
         await page.goto(`${url}`, { waitUntil: "domcontentloaded" });
 
         //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
@@ -69,8 +69,8 @@ const minefarmbuyScraper = async () => {
         //no incoterms dropdown and no efficiency dropdown
         if (incoterms.length === 0 && filteredEfficiency.length === 0) {
           //loops through the filtered options and sets the data
-          for (let i = 0; i < filterHashrateOptions.length; i++) {
-            await page.select("select#hashrate", filterHashrateOptions[i]);
+          for (const hash of filterHashrateOptions) {
+            await page.select("select#hashrate", hash);
 
             const asicPrice = await page.$$eval(
               "div > div > form > div > div > div > span > span > bdi",
@@ -93,7 +93,7 @@ const minefarmbuyScraper = async () => {
             minefarmbuyData.push({
               seller: "minefarmbuy",
               asic: `${asicName}`,
-              th: filterHashrateOptions[i],
+              th: hash,
               price:
                 asicPrice[0] === undefined
                   ? Number(
@@ -105,8 +105,8 @@ const minefarmbuyScraper = async () => {
             });
           }
         } else if (filteredEfficiency.length > 0) {
-          for (let i = 0; i < filteredEfficiency.length; i++) {
-            await page.select("select#efficiency", filteredEfficiency[i]);
+          for (const effic of filteredEfficiency) {
+            await page.select("select#efficiency", effic);
 
             const hashrateOptionForEff = await page.$$eval(
               "#hashrate > option",
@@ -117,8 +117,8 @@ const minefarmbuyScraper = async () => {
               return t.match(/th/i) && parseInt(Number(t.charAt(0)));
             });
 
-            for (let j = 0; j < efficiencyHashrateOpt.length; j++) {
-              await page.select("select#hashrate", efficiencyHashrateOpt[j]);
+            for (const th of efficiencyHashrateOpt) {
+              await page.select("select#hashrate", th);
 
               const asicPrice = await page.$$eval(
                 "div > div > form > div > div > div > span > span > bdi",
@@ -136,8 +136,8 @@ const minefarmbuyScraper = async () => {
 
               minefarmbuyData.push({
                 seller: "minefarmbuy",
-                asic: `${asicName}`,
-                th: efficiencyHashrateOpt[j],
+                asic: asicName,
+                th,
                 price: Number(asicPrice[0].replace("$", "").replace(",", "")),
                 date: moment().format("MMMM Do YYYY"),
                 id: sha1(id),
