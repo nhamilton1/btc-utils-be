@@ -47,3 +47,30 @@ This information is coming from: btc.com <br/>
 example: <br/>
 https://btc.com/service/poolBlockCounterPerDay?start=20211201&end=20220113&pool=SlushPool <br/>
 https://btc.com/service/poolBlockCounterPerDay?start=date_here&end=date_here&pool=pool_name_here <br/>
+
+asic price data:
+
+[GET] /api/asics/
+
+```
+[
+  {
+      "seller": "Kaboomracks",
+      "asic": "Whatsminer M31S+ 82T 42 W/T",
+      "th": "82T",
+      "price": 5699,
+      "date": "January 30th, 2022"
+  },
+  {
+      "seller": "minefarmbuy",
+      "asic": "M30S-PLUS-2-110T-31J",
+      "th": "110th/s (+/- 5%)",
+      "price": 11045,
+      "date": "January 30th 2022"
+  },
+]
+```
+
+| Method | URL         | Description                                                                                                                                                                                                            |
+| ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [GET]  | /api/asics/ | returns the seller of the asic, the name of the asic with th, price, and the date. As for the date, with minefarmbuy, it just uses the date when it was first scraped. Kaboomracks uses the date of when it was posted |
