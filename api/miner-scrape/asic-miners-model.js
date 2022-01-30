@@ -1,9 +1,10 @@
 const db = require("../data/db-config");
 
 const getAll = async () => {
-  const asics = await db("kaboomracks").select(
+  const asics = await db("asic_data").select(
     "seller",
     "asic",
+    "th",
     "price",
     "date"
   );
@@ -15,13 +16,15 @@ const add = async (item) => {
     id: x.id,
     seller: x.seller,
     asic: x.asic,
+    th: x.th,
     price: x.price,
     date: x.date,
   }));
-  const [newItemObject] = await db("kaboomracks").insert(asicData, [
+  const [newItemObject] = await db("asic_data").insert(asicData, [
     "id",
     "seller",
     "asic",
+    "th",
     "price",
     "date",
   ]);
@@ -29,15 +32,16 @@ const add = async (item) => {
 };
 
 const getAllIds = async () => {
-  const asics = await db("kaboomracks").select(
+  const asics = await db("asic_data").select(
     "id",
     "seller",
     "asic",
+    "th",
     "price",
     "date"
   );
   return asics;
-}
+};
 
 module.exports = {
   getAll,

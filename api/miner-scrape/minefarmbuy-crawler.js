@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const { sha1 } = require("./helpers");
+const moment = require("moment");
 
 const minefarmbuyScraper = async () => {
   let browser;
@@ -82,7 +83,11 @@ const minefarmbuyScraper = async () => {
             );
 
             let id = `minefarmbuy ${asicName} ${
-              asicPrice[0] === undefined ? ifNoPriceFromAsicPrice : asicPrice[0]
+              asicPrice[0] === undefined
+                ? Number(
+                    ifNoPriceFromAsicPrice.replace("$", "").replace(",", "")
+                  )
+                : Number(asicPrice[0].replace("$", "").replace(",", ""))
             }`;
 
             minefarmbuyData.push({
@@ -91,8 +96,11 @@ const minefarmbuyScraper = async () => {
               th: filterHashrateOptions[i],
               price:
                 asicPrice[0] === undefined
-                  ? ifNoPriceFromAsicPrice
-                  : asicPrice[0],
+                  ? Number(
+                      ifNoPriceFromAsicPrice.replace("$", "").replace(",", "")
+                    )
+                  : Number(asicPrice[0].replace("$", "").replace(",", "")),
+              date: moment().format("MMMM Do YYYY"),
               id: sha1(id),
             });
           }
@@ -122,13 +130,16 @@ const minefarmbuyScraper = async () => {
                 (el) => el.innerText
               );
 
-              let id = `minefarmbuy ${asicName} ${asicPrice[0]}`;
+              let id = `minefarmbuy ${asicName} ${Number(
+                asicPrice[0].replace("$", "").replace(",", "")
+              )}`;
 
               minefarmbuyData.push({
                 seller: "minefarmbuy",
                 asic: `${asicName}`,
                 th: efficiencyHashrateOpt[j],
-                price: asicPrice[0],
+                price: Number(asicPrice[0].replace("$", "").replace(",", "")),
+                date: moment().format("MMMM Do YYYY"),
                 id: sha1(id),
               });
             }
@@ -145,6 +156,7 @@ const minefarmbuyScraper = async () => {
     }
 
     await browser.close();
+    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
