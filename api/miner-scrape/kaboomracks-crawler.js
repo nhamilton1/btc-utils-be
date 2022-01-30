@@ -1,8 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const crypto = require("crypto");
-
-const sha1 = (x) => crypto.createHash("sha1").update(x, "utf8").digest("hex");
+const { sha1 } = require("./helpers");
 
 const kaboomracksScraper = async () => {
   try {

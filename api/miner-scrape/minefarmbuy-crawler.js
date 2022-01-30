@@ -81,7 +81,7 @@ const minefarmbuyScraper = async () => {
               (el) => el.innerText
             );
 
-            let id = `minefarmbuy ${
+            let id = `minefarmbuy ${asicName} ${
               asicPrice[0] === undefined ? ifNoPriceFromAsicPrice : asicPrice[0]
             }`;
 
@@ -145,7 +145,6 @@ const minefarmbuyScraper = async () => {
     }
 
     await browser.close();
-    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
