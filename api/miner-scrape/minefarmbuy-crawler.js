@@ -5,7 +5,7 @@ const moment = require("moment");
 const minefarmbuyScraper = async () => {
   let browser;
   try {
-    // adding slowMo: 1 fixes the bug where asics with just the hashrate
+    // adding slowMo: 20 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
     browser = await puppeteer.launch({ slowMo: 20 });
     const page = await browser.newPage();
