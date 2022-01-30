@@ -32,9 +32,16 @@ const kaboomracksScraper = async () => {
           .replace(/[^\x20-\x7E]/g, "");
         let id = seller + asic + price + date;
 
+        let th = asic
+          .split(" ")
+          .filter((e) =>
+            e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
+          )[0];
+
         asics.push({
           seller,
           asic,
+          th,
           price,
           date,
           id: sha1(id),
@@ -50,9 +57,18 @@ const kaboomracksScraper = async () => {
           .replace(/[^\x20-\x7E]/g, "");
         let id = seller + asic + price + date;
 
+        let th = asic
+          .split(" ")
+          .filter((e) =>
+            e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
+          )[0];
+
+        console.log(th);
+
         asics.push({
           seller,
           asic,
+          th,
           price,
           date,
           id: sha1(id),
@@ -82,11 +98,14 @@ const kaboomracksScraper = async () => {
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
 
+    console.log(filtered);
     return filtered;
   } catch (err) {
     console.error(err);
   }
 };
+
+kaboomracksScraper();
 
 module.exports = {
   kaboomracksScraper,
