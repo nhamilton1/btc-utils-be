@@ -7,17 +7,22 @@ const asicData = async (req, res, next) => {
     const asic = await Asics.getAllIds();
     const scrapeForKaboomData = await kaboomracksScraper();
     const scrapeForMFBData = await minefarmbuyScraper();
-    const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
-    const dupCheck = allData.filter(
+    const dupCheck1 = scrapeForKaboomData.filter(
+      (scapeData) =>
+        !asic.find((allAsicData) => scapeData.id === allAsicData.id)
+    );
+    const dupCheck2 = scrapeForMFBData.filter(
       (scapeData) =>
         !asic.find((allAsicData) => scapeData.id === allAsicData.id)
     );
 
     if (asic.length === 0) {
-      await Asics.add(allData);
+      await Asics.add(scrapeForKaboomData);
+      await Asics.add(scrapeForMFBData);
       next();
-    } else if (dupCheck.length > 0) {
-      await Asics.add(dupCheck);
+    } else if (dupCheck1.length > 0 && dupCheck2.length > 0) {
+      await Asics.add(dupCheck1);
+      await Asics.add(dupCheck2);
       next();
     } else {
       next();
