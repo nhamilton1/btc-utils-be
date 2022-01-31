@@ -153,7 +153,7 @@ const minefarmbuyScraper = async () => {
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
   } finally {
-    await browser.close();
+    browser.close();
   }
 };
 
