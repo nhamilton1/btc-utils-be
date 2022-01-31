@@ -5,24 +5,19 @@ const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
 const asicData = async (req, res, next) => {
   try {
     const asic = await Asics.getAllIds();
-    const scrapeForKaboomData = await kaboomracksScraper();
     const scrapeForMFBData = await minefarmbuyScraper();
-    const dupCheck1 = scrapeForKaboomData.filter(
-      (scapeData) =>
-        !asic.find((allAsicData) => scapeData.id === allAsicData.id)
-    );
-    const dupCheck2 = scrapeForMFBData.filter(
+    const scrapeForKaboomData = await kaboomracksScraper();
+    const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
+    const dupCheck = allData.filter(
       (scapeData) =>
         !asic.find((allAsicData) => scapeData.id === allAsicData.id)
     );
 
     if (asic.length === 0) {
-      await Asics.add(scrapeForKaboomData);
-      await Asics.add(scrapeForMFBData);
+      await Asics.add(allData);
       next();
-    } else if (dupCheck1.length > 0 && dupCheck2.length > 0) {
-      await Asics.add(dupCheck1);
-      await Asics.add(dupCheck2);
+    } else if (dupCheck.length > 0) {
+      await Asics.add(dupCheck);
       next();
     } else {
       next();
