@@ -149,11 +149,10 @@ const minefarmbuyScraper = async () => {
         break;
       }
     }
+    await browser.close();
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
-  } finally {
-    browser.close();
   }
 };
 
