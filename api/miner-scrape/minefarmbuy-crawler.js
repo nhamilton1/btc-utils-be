@@ -7,7 +7,7 @@ const minefarmbuyScraper = async () => {
   try {
     // adding slowMo: 20 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    browser = await puppeteer.launch({ slowMo: 20 });
+    browser = await puppeteer.launch({ headless: false, slowMo: 20 });
     const page = await browser.newPage();
     await page.goto("https://minefarmbuy.com/product-category/btc-asics/", {
       waitUntil: "domcontentloaded",
@@ -68,7 +68,7 @@ const minefarmbuyScraper = async () => {
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
         //loops through the filtered options and sets the data
-        for (const hash of filterHashrateOptions) {
+        for (const hash of filterHashrateOptions.values()) {
           await page.select("select#hashrate", hash);
 
           const asicPrice = await page.$$eval(
@@ -102,7 +102,7 @@ const minefarmbuyScraper = async () => {
           });
         }
       } else if (filteredEfficiency.length > 0) {
-        for (const effic of filteredEfficiency) {
+        for (const effic of filteredEfficiency.values()) {
           await page.select("select#efficiency", effic);
 
           const hashrateOptionForEff = await page.$$eval(
@@ -114,7 +114,7 @@ const minefarmbuyScraper = async () => {
             return t.match(/th/i) && parseInt(Number(t.charAt(0)));
           });
 
-          for (const th of efficiencyHashrateOpt) {
+          for (const th of efficiencyHashrateOpt.values()) {
             await page.select("select#hashrate", th);
 
             const asicPrice = await page.$$eval(
@@ -150,11 +150,13 @@ const minefarmbuyScraper = async () => {
       }
     }
     await browser.close();
+    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
   }
 };
+minefarmbuyScraper();
 
 module.exports = {
   minefarmbuyScraper,
