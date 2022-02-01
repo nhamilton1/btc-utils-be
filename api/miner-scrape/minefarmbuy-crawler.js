@@ -7,7 +7,7 @@ const minefarmbuyScraper = async () => {
   try {
     // adding slowMo: 20 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    browser = await puppeteer.launch({ headless: false, slowMo: 20 });
+    browser = await puppeteer.launch({ slowMo: 20 });
     const page = await browser.newPage();
     await page.goto("https://minefarmbuy.com/product-category/btc-asics/", {
       waitUntil: "domcontentloaded",
@@ -50,9 +50,12 @@ const minefarmbuyScraper = async () => {
 
       const filteredEfficiency = efficiency.filter((t) => t.match(/J\/th/i));
 
-      const ifNoPriceFromAsicPrice = await page.$eval(
+      //$$evail on most because if it was undefined, it would crash
+      //could move this down to the if statement and make it $eval
+      //have to remember to remove the [0]
+      const ifNoPriceFromAsicPrice = await page.$$eval(
         "div > div.summary.entry-summary > p > span > bdi",
-        (el) => el.innerText
+        (el) => el.map((e) => e.innerText)
       );
 
       //checks for hashrate dropdown when page first loads
@@ -64,6 +67,14 @@ const minefarmbuyScraper = async () => {
       const filterHashrateOptions = hashOption.filter((t) => {
         return t.match(/th/i) && parseInt(Number(t.charAt(0)));
       });
+
+      //checks for OoS
+      //had to include this, would crash if it could not find it
+      // eslint-disable-next-line no-unused-vars
+      const oos = await page.$$eval(
+        "div > div.summary.entry-summary > form > p",
+        (el) => el.map((e) => e.innerText)
+      );
 
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
@@ -83,7 +94,9 @@ const minefarmbuyScraper = async () => {
 
           let id = `minefarmbuy ${asicName} ${
             asicPrice[0] === undefined
-              ? Number(ifNoPriceFromAsicPrice.replace("$", "").replace(",", ""))
+              ? Number(
+                  ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
+                )
               : Number(asicPrice[0].replace("$", "").replace(",", ""))
           }`;
 
@@ -94,7 +107,7 @@ const minefarmbuyScraper = async () => {
             price:
               asicPrice[0] === undefined
                 ? Number(
-                    ifNoPriceFromAsicPrice.replace("$", "").replace(",", "")
+                    ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
                   )
                 : Number(asicPrice[0].replace("$", "").replace(",", "")),
             date: moment().format("MMMM Do YYYY"),
