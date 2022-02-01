@@ -34,7 +34,7 @@ const minefarmbuyScraper = async () => {
     const minefarmbuyData = [];
 
     //loops through all of the filtered links
-    for (const uurl of uniqUrls) {
+    for (const uurl of uniqUrls.values()) {
       const url = uurl;
       await page.goto(`${url}`, { waitUntil: "domcontentloaded" });
 
@@ -150,14 +150,11 @@ const minefarmbuyScraper = async () => {
       }
     }
     await browser.close();
-    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
   }
 };
-
-minefarmbuyScraper()
 
 module.exports = {
   minefarmbuyScraper,

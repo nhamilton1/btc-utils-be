@@ -7,7 +7,8 @@ const asicData = async (req, res, next) => {
     const asic = await Asics.getAllIds();
     const scrapeForMFBData = await minefarmbuyScraper();
     const scrapeForKaboomData = await kaboomracksScraper();
-    const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
+    const allData = scrapeForKaboomData.concat(scrapeForMFBData)
+    // const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
     const dupCheck = allData.filter(
       (scapeData) =>
         !asic.find((allAsicData) => scapeData.id === allAsicData.id)
