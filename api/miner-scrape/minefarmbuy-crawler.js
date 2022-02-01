@@ -7,7 +7,7 @@ const minefarmbuyScraper = async () => {
   try {
     // adding slowMo: 20 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    browser = await puppeteer.launch({ slowMo: 20 });
+    browser = await puppeteer.launch({ slowMo: 20, args: ["--no-sandbox"] });
     const page = await browser.newPage();
     await page.goto("https://minefarmbuy.com/product-category/btc-asics/", {
       waitUntil: "domcontentloaded",
