@@ -1,5 +1,5 @@
 {
-  "name": "build-week-scaffolding-node",
+  "name": "ndp-be-node",
   "version": "1.0.0",
   "scripts": {
     "start": "node index.js",
@@ -41,6 +41,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bloominstituteoftechnology/build-week-scaffolding-node.git"
+    "url": "git+https://github.com/nhamilton1/ndp-be.git"
   }
 }
