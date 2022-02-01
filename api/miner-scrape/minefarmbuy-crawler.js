@@ -5,10 +5,10 @@ const moment = require("moment");
 const minefarmbuyScraper = async () => {
   let browser;
   try {
-    // adding slowMo: 20 fixes the bug where asics with just the hashrate
+    // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
     browser = await puppeteer.launch({
-      slowMo: 1,
+      slowMo: 5,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -36,10 +36,10 @@ const minefarmbuyScraper = async () => {
 
     const minefarmbuyData = [];
 
-    //loops through all of the filtered links
+    // loops through all of the filtered links
     for (const uurl of uniqUrls.values()) {
       const url = uurl;
-      await page.goto(`${url}`, { waitUntil: "domcontentloaded" });
+      await page.goto(url, { waitUntil: "domcontentloaded" });
 
       //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
       const incoterms = await page.$$eval("#incoterms > option", (node) =>
@@ -82,7 +82,7 @@ const minefarmbuyScraper = async () => {
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
         //loops through the filtered options and sets the data
-        for await (const hash of filterHashrateOptions.values()) {
+        for (const hash of filterHashrateOptions.values()) {
           await page.select("select#hashrate", hash);
 
           const asicPrice = await page.$$eval(
@@ -95,6 +95,7 @@ const minefarmbuyScraper = async () => {
             (el) => el.innerText
           );
 
+          //creating a unique id so later i can use it to check already found miners
           let id = `minefarmbuy ${asicName} ${
             asicPrice[0] === undefined
               ? Number(
@@ -118,7 +119,7 @@ const minefarmbuyScraper = async () => {
           });
         }
       } else if (filteredEfficiency.length > 0) {
-        for await (const effic of filteredEfficiency.values()) {
+        for (const effic of filteredEfficiency.values()) {
           await page.select("select#efficiency", effic);
 
           const hashrateOptionForEff = await page.$$eval(
@@ -130,7 +131,7 @@ const minefarmbuyScraper = async () => {
             return t.match(/th/i) && parseInt(Number(t.charAt(0)));
           });
 
-          for await (const th of efficiencyHashrateOpt.values()) {
+          for (const th of efficiencyHashrateOpt.values()) {
             await page.select("select#hashrate", th);
 
             const asicPrice = await page.$$eval(
@@ -165,8 +166,8 @@ const minefarmbuyScraper = async () => {
         break;
       }
     }
+
     await browser.close();
-    console.log(minefarmbuyData)
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);

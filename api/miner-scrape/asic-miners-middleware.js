@@ -1,14 +1,13 @@
 const Asics = require("./asic-miners-model");
 const { kaboomracksScraper } = require("./kaboomracks-crawler");
-const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
+const { mfbScraper } = require("./newMFB-crawler");
 
 const asicData = async (req, res, next) => {
   try {
     const asic = await Asics.getAllIds();
-    const scrapeForMFBData = await minefarmbuyScraper();
+    const scrapeForMFBData = await mfbScraper();
     const scrapeForKaboomData = await kaboomracksScraper();
-    const allData = scrapeForMFBData.concat(scrapeForKaboomData)
-    // const allData = [...scrapeForKaboomData, ...scrapeForMFBData];
+    const allData = scrapeForMFBData.concat(scrapeForKaboomData);
     const dupCheck = allData.filter(
       (scapeData) =>
         !asic.find((allAsicData) => scapeData.id === allAsicData.id)
