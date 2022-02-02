@@ -4,10 +4,10 @@ const moment = require("moment");
 
 const mfbScraper = async () => {
   const withBrowser = async (fn) => {
-    // adding slowMo: 1 fixes the bug where asics with just the hashrate
+    // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    // adding this adds 2 seconds
     const browser = await puppeteer.launch({
+      slowMo: 1,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     try {

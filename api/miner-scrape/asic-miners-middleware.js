@@ -1,11 +1,13 @@
 const Asics = require("./asic-miners-model");
 const { kaboomracksScraper } = require("./kaboomracks-crawler");
-const { mfbScraper } = require("./newMFB-crawler");
+const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
+// this takes up too much memory for heroku and would have to pay to use it.
+// const { mfbScraper } = require("./newMFB-crawler");
 
 const asicData = async (req, res, next) => {
   try {
     const asic = await Asics.getAllIds();
-    const scrapeForMFBData = await mfbScraper();
+    const scrapeForMFBData = await minefarmbuyScraper();
     const scrapeForKaboomData = await kaboomracksScraper();
     const allData = scrapeForMFBData.concat(scrapeForKaboomData);
     const dupCheck = allData.filter(

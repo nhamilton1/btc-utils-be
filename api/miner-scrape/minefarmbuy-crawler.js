@@ -3,6 +3,7 @@ const { sha1 } = require("./helpers");
 const moment = require("moment");
 
 const minefarmbuyScraper = async () => {
+  console.time("time");
   let browser;
   try {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
@@ -168,11 +169,17 @@ const minefarmbuyScraper = async () => {
     }
 
     await browser.close();
+    console.log(minefarmbuyData.length);
+    console.timeEnd("time");
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
+  } finally {
+    browser.close();
   }
 };
+
+minefarmbuyScraper();
 
 module.exports = {
   minefarmbuyScraper,
