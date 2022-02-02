@@ -37,8 +37,7 @@ const minefarmbuyScraper = async () => {
     const minefarmbuyData = [];
 
     // loops through all of the filtered links
-    for (const uurl of uniqUrls.values()) {
-      const url = uurl;
+    for (const url of uniqUrls.values()) {
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
       //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
