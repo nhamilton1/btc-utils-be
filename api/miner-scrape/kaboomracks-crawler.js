@@ -17,8 +17,21 @@ const kaboomracksScraper = async () => {
       // this will filter out any posts that do not each in them
       // they sell by lots some times.
       const individualSales = minerData.match(/(?=[—]\s*).*?(?=\s*each —)/gs);
+      const moq = minerData.match(/(?=order \s*).*?(?=\s*ships)/g);
 
-      if (minerData.includes("Antminer S") && individualSales != null) {
+      //tests for moq of 1
+      const moqTest = moq?.map((ele) =>
+        ele
+          .split(" ")
+          .map((n) => (!isNaN(n) ? Number(n) : null))
+          .filter((i) => i)
+      )[0];
+
+      if (
+        minerData.includes("Antminer S") &&
+        individualSales != null &&
+        moqTest[0] === 1
+      ) {
         let seller = "Kaboomracks";
         //this will find between the given strings, for exmample here:
         //will find between Bitmain Antminer S and for
@@ -48,7 +61,11 @@ const kaboomracksScraper = async () => {
         });
       }
 
-      if (minerData.includes("Whatsminer M") && individualSales != null) {
+      if (
+        minerData.includes("Whatsminer M") &&
+        individualSales != null &&
+        moqTest[0] === 1
+      ) {
         let seller = "Kaboomracks";
         let asic = minerData.match(/(?=Whatsminer M\s*).*?(?=\s*for)/gs)[0];
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
@@ -73,7 +90,11 @@ const kaboomracksScraper = async () => {
         });
       }
 
-      if (minerData.includes("Canaan A") && individualSales != null) {
+      if (
+        minerData.includes("Canaan A") &&
+        individualSales != null &&
+        moqTest[0] === 1
+      ) {
         let seller = "Kaboomracks";
         let asic = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
@@ -102,7 +123,6 @@ const kaboomracksScraper = async () => {
     //filters for dups
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
-
     return filtered;
   } catch (err) {
     console.error(err);

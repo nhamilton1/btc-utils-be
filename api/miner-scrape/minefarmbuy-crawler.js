@@ -175,7 +175,6 @@ const minefarmbuyScraper = async () => {
   }
 };
 
-
 module.exports = {
   minefarmbuyScraper,
 };
