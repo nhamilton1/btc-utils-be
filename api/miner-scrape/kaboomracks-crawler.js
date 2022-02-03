@@ -29,6 +29,7 @@ const kaboomracksScraper = async () => {
       )[0];
 
       if (
+        //might have to change this so it includes T versions
         minerData.includes("Antminer S") &&
         individualSales != null &&
         moqTest[0] === 1
