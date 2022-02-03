@@ -9,6 +9,7 @@ const kaboomracksScraper = async () => {
     const $miner = cheerio.load(data);
 
     const asics = [];
+
     $miner(
       "body > main > div > section > div > div > div > div.tgme_widget_message_text"
     ).each((_idx, el) => {
