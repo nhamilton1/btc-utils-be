@@ -60,16 +60,6 @@ const minefarmbuyScraper = async () => {
         (el) => el.map((e) => e.innerText)
       );
 
-      //checks for hashrate dropdown when page first loads
-      const hashOption = await page.$$eval("#hashrate > option", (node) =>
-        node.map((th) => th.innerText)
-      );
-
-      //filters values for only ths, no batches or option value
-      const filterHashrateOptions = hashOption.filter((t) => {
-        return t.match(/th/i) && parseInt(Number(t.charAt(0)));
-      });
-
       //checks for OoS
       //had to include this, would crash if it could not find it
       // eslint-disable-next-line no-unused-vars
@@ -80,6 +70,16 @@ const minefarmbuyScraper = async () => {
 
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
+        //checks for hashrate dropdown when page first loads
+        const hashOption = await page.$$eval("#hashrate > option", (node) =>
+          node.map((th) => th.innerText)
+        );
+
+        //filters values for only ths, no batches or option value
+        const filterHashrateOptions = hashOption.filter((t) => {
+          return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+        });
+
         //loops through the filtered options and sets the data
         for (const hash of filterHashrateOptions.values()) {
           await page.select("select#hashrate", hash);
@@ -170,8 +170,6 @@ const minefarmbuyScraper = async () => {
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
-  } finally {
-    browser.close();
   }
 };
 

@@ -19,7 +19,6 @@ const kaboomracksScraper = async () => {
       // they sell by lots some times.
       const individualSales = minerData.match(/(?=[—]\s*).*?(?=\s*each —)/gs);
       const moq = minerData.match(/(?=order \s*).*?(?=\s*ships)/g);
-
       //tests for moq of 1
       const moqTest = moq?.map((ele) =>
         ele
