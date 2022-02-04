@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { sha1 } = require("./helpers");
+const { sha1, convertPowerDraw } = require("./helpers");
 const moment = require("moment");
 
 const minefarmbuyScraper = async () => {
@@ -81,8 +81,8 @@ const minefarmbuyScraper = async () => {
         });
 
         //loops through the filtered options and sets the data
-        for (const hash of filterHashrateOptions.values()) {
-          await page.select("select#hashrate", hash);
+        for (const th of filterHashrateOptions.values()) {
+          await page.select("select#hashrate", th);
 
           const asicPrice = await page.$$eval(
             "div > div > form > div > div > div > span > span > bdi",
@@ -91,6 +91,11 @@ const minefarmbuyScraper = async () => {
 
           const asicName = await page.$eval(
             "div > div.summary.entry-summary > div.product_meta > span.sku_wrapper > span",
+            (el) => el.innerText
+          );
+
+          const powerDraw = await page.$eval(
+            "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
             (el) => el.innerText
           );
 
@@ -106,7 +111,8 @@ const minefarmbuyScraper = async () => {
           minefarmbuyData.push({
             seller: "minefarmbuy",
             asic: asicName,
-            th: hash,
+            th,
+            watts: convertPowerDraw(powerDraw, th),
             price:
               asicPrice[0] === undefined
                 ? Number(
@@ -151,6 +157,7 @@ const minefarmbuyScraper = async () => {
               seller: "minefarmbuy",
               asic: asicName,
               th,
+              watts: convertPowerDraw(effic, th),
               price: Number(asicPrice[0].replace("$", "").replace(",", "")),
               date: moment().format("MMMM Do YYYY"),
               id: sha1(id),

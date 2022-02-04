@@ -1,6 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const { sha1 } = require("./helpers");
+const asicWattList = require("./asicWattList");
 
 const kaboomracksScraper = async () => {
   try {
@@ -19,6 +20,7 @@ const kaboomracksScraper = async () => {
       // they sell by lots some times.
       const individualSales = minerData.match(/(?=[—]\s*).*?(?=\s*each —)/gs);
       const moq = minerData.match(/(?=order \s*).*?(?=\s*ships)/g);
+
       //tests for moq of 1
       const moqTest = moq?.map((ele) =>
         ele
@@ -52,10 +54,25 @@ const kaboomracksScraper = async () => {
             e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
           )[0];
 
+        //gets the asic name without the th
+        let asicSearchName = minerData
+          .match(/(?=Bitmain Antminer S\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
+
+        //gets the watts from the asic watt list, remove the t from the th var
+        //if there isnt a match it will take the wt and * it by the th
+        let watts =
+          asicWattList[asicSearchName][th.replace(/t/i, "")] !== undefined
+            ? asicWattList[asicSearchName][th.replace(/t/i, "")]
+            : asicWattList[asicSearchName]["wt"] * Number(th.replace(/t/i, ""));
+
         asics.push({
           seller,
           asic,
           th,
+          watts,
           price,
           date,
           id: sha1(id),
@@ -81,10 +98,22 @@ const kaboomracksScraper = async () => {
             e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
           )[0];
 
+        let asicSearchName = minerData
+          .match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
+
+        let watts =
+          asicWattList[asicSearchName][th.replace(/t/i, "")] !== undefined
+            ? asicWattList[asicSearchName][th.replace(/t/i, "")]
+            : asicWattList[asicSearchName]["wt"] * Number(th.replace(/t/i, ""));
+
         asics.push({
           seller,
           asic,
           th,
+          watts,
           price,
           date,
           id: sha1(id),
@@ -110,10 +139,22 @@ const kaboomracksScraper = async () => {
             e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
           )[0];
 
+        let asicSearchName = minerData
+          .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
+
+        let watts =
+          asicWattList[asicSearchName][th.replace(/t/i, "")] !== undefined
+            ? asicWattList[asicSearchName][th.replace(/t/i, "")]
+            : asicWattList[asicSearchName]["wt"] * Number(th.replace(/t/i, ""));
+
         asics.push({
           seller,
           asic,
           th,
+          watts,
           price,
           date,
           id: sha1(id),

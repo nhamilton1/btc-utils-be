@@ -5,6 +5,7 @@ const getAll = async () => {
     "seller",
     "asic",
     "th",
+    "watts",
     "price",
     "date"
   );
@@ -17,6 +18,7 @@ const add = async (item) => {
     seller: x.seller,
     asic: x.asic,
     th: x.th,
+    watts: x.watts,
     price: x.price,
     date: x.date,
   }));
@@ -25,6 +27,7 @@ const add = async (item) => {
     "seller",
     "asic",
     "th",
+    "watts",
     "price",
     "date",
   ]);
@@ -37,6 +40,7 @@ const getAllIds = async () => {
     "seller",
     "asic",
     "th",
+    "watts",
     "price",
     "date"
   );
