@@ -72,7 +72,7 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
-        
+
         asics.push({
           seller,
           asic,
@@ -189,8 +189,6 @@ const kaboomracksScraper = async () => {
     console.error(err);
   }
 };
-
-kaboomracksScraper();
 
 module.exports = {
   kaboomracksScraper,
