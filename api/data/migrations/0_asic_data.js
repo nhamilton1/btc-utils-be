@@ -3,7 +3,7 @@ exports.up = async (knex) => {
     table.string("id").unique();
     table.string("seller");
     table.string("model");
-    table.string("th");
+    table.float("th");
     table.float("watts");
     table.float("efficiency");
     table.float("price");

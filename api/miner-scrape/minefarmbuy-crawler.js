@@ -100,7 +100,9 @@ const minefarmbuyScraper = async () => {
           );
 
           // having this filter so the regex knows where to stop
-          const asicNameFilter = `${asicModel} abc`;
+          // the replace removes the first space if they leave a space
+          // between the ++ like in M30s ++ should be M30s++
+          const asicNameFilter = `${asicModel.replace(/\s+(\W)/g, "$1")} abc`;
           const asicName =
             asicNameFilter.match(/(?=Whatsminer\s*).*?(?=\s*abc)/gs) ||
             asicNameFilter.match(/(?=Antminer\s*).*?(?=\s*abc)/gs) ||
