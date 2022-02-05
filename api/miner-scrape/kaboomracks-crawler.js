@@ -71,7 +71,7 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
-        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let model = `${asicName[0]}T`;
         let id = seller + model + price + date;
 
         asics.push({
@@ -122,7 +122,7 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
-        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let model = `${asicName[0]}T`;
         let id = seller + model + price + date;
 
         asics.push({
@@ -172,7 +172,7 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
-        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let model = `${asicName[0]}T`;
         let id = seller + model + price + date;
 
         asics.push({
