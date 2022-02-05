@@ -36,20 +36,24 @@ const kaboomracksScraper = async () => {
         moqTest[0] === 1
       ) {
         let seller = "Kaboomracks";
-        //this will find between the given strings, for exmample here:
-        //will find between Bitmain Antminer S and for
-        let asic = minerData.match(
-          /(?=Bitmain Antminer S\s*).*?(?=\s*for)/gs
-        )[0];
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
           //removes the invalid chars
           .replace(/[^\x20-\x7E]/g, "");
-        let id = seller + asic + price + date;
+
+        //this will find between the given strings, for exmample here:
+        //will find between Antminer S and for
+        let asicModel = minerData.match(/(?=Antminer S\s*).*?(?=\s*for)/gs)[0];
+        //gets the asic name without the th
+        let asicSearchName = minerData
+          .match(/(?=Bitmain Antminer S\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
 
         let th = Number(
-          asic
+          asicModel
             .split(" ")
             .filter((e) =>
               e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
@@ -57,12 +61,7 @@ const kaboomracksScraper = async () => {
             .replace("T", "")
         );
 
-        //gets the asic name without the th
-        let asicSearchName = minerData
-          .match(/(?=Bitmain Antminer S\s*).*?(?=\s*T)/gs)[0]
-          .split(" ")
-          .slice(0, -1)
-          .join(" ");
+        const asicName = asicModel.match(/(?=Antminer S\s*).*?(?=\s*T)/gs);
 
         //gets the watts from the asic watt list, remove the t from the th var
         //if there isnt a match it will take the wt and * it by the th
@@ -72,10 +71,12 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
+        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let id = seller + model + price + date;
 
         asics.push({
           seller,
-          asic,
+          model,
           th,
           watts,
           efficiency,
@@ -91,15 +92,21 @@ const kaboomracksScraper = async () => {
         moqTest[0] === 1
       ) {
         let seller = "Kaboomracks";
-        let asic = minerData.match(/(?=Whatsminer M\s*).*?(?=\s*for)/gs)[0];
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
           .replace(/[^\x20-\x7E]/g, "");
-        let id = seller + asic + price + date;
+        let asicModel = minerData.match(
+          /(?=Whatsminer M\s*).*?(?=\s*for)/gs
+        )[0];
+        let asicSearchName = minerData
+          .match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
 
         let th = Number(
-          asic
+          asicModel
             .split(" ")
             .filter((e) =>
               e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
@@ -107,11 +114,7 @@ const kaboomracksScraper = async () => {
             .replace("T", "")
         );
 
-        let asicSearchName = minerData
-          .match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs)[0]
-          .split(" ")
-          .slice(0, -1)
-          .join(" ");
+        const asicName = asicModel.match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs);
 
         let watts =
           asicWattList[asicSearchName][th] !== undefined
@@ -119,10 +122,12 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
+        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let id = seller + model + price + date;
 
         asics.push({
           seller,
-          asic,
+          model,
           th,
           watts,
           efficiency,
@@ -138,15 +143,19 @@ const kaboomracksScraper = async () => {
         moqTest[0] === 1
       ) {
         let seller = "Kaboomracks";
-        let asic = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
           .replace(/[^\x20-\x7E]/g, "");
-        let id = seller + asic + price + date;
+        let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
+        let asicSearchName = minerData
+          .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)[0]
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
 
         let th = Number(
-          asic
+          asicModel
             .split(" ")
             .filter((e) =>
               e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
@@ -154,11 +163,8 @@ const kaboomracksScraper = async () => {
             .replace("T", "")
         );
 
-        let asicSearchName = minerData
-          .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)[0]
-          .split(" ")
-          .slice(0, -1)
-          .join(" ");
+        const asicName = asicModel.match(/(?=Canaan A\s*).*?(?=\s*T)/gs);
+        // asicNameFilter.match(/(?=Antminer S\s*).*?(?=\s*abc)/gs) ||
 
         let watts =
           asicWattList[asicSearchName][th] !== undefined
@@ -166,10 +172,12 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
+        let model = `${asicName[0]}T ${efficiency}J/th`;
+        let id = seller + model + price + date;
 
         asics.push({
           seller,
-          asic,
+          model,
           th,
           watts,
           efficiency,
@@ -183,7 +191,6 @@ const kaboomracksScraper = async () => {
     //filters for dups
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
-    console.log(filtered);
     return filtered;
   } catch (err) {
     console.error(err);
