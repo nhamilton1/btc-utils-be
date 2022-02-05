@@ -35,7 +35,7 @@ const kaboomracksScraper = async () => {
         individualSales != null &&
         moqTest[0] === 1
       ) {
-        let seller = "Kaboomracks";
+        let vendor = "Kaboomracks";
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
@@ -72,10 +72,10 @@ const kaboomracksScraper = async () => {
 
         let efficiency = watts / th;
         let model = `${asicName[0]}T`;
-        let id = seller + model + price + date;
+        let id = vendor + model + price + date;
 
         asics.push({
-          seller,
+          vendor,
           model,
           th,
           watts,
@@ -91,7 +91,7 @@ const kaboomracksScraper = async () => {
         individualSales != null &&
         moqTest[0] === 1
       ) {
-        let seller = "Kaboomracks";
+        let vendor = "Kaboomracks";
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
@@ -123,10 +123,10 @@ const kaboomracksScraper = async () => {
 
         let efficiency = watts / th;
         let model = `${asicName[0]}T`;
-        let id = seller + model + price + date;
+        let id = vendor + model + price + date;
 
         asics.push({
-          seller,
+          vendor,
           model,
           th,
           watts,
@@ -142,7 +142,7 @@ const kaboomracksScraper = async () => {
         individualSales != null &&
         moqTest[0] === 1
       ) {
-        let seller = "Kaboomracks";
+        let vendor = "Kaboomracks";
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
@@ -173,10 +173,10 @@ const kaboomracksScraper = async () => {
 
         let efficiency = watts / th;
         let model = `${asicName[0]}T`;
-        let id = seller + model + price + date;
+        let id = vendor + model + price + date;
 
         asics.push({
-          seller,
+          vendor,
           model,
           th,
           watts,

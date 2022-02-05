@@ -120,7 +120,7 @@ const minefarmbuyScraper = async () => {
           }`;
 
           minefarmbuyData.push({
-            seller: "minefarmbuy",
+            vendor: "minefarmbuy",
             model,
             th: Number(th.split(/th/i)[0]),
             watts: convertPowerDraw(powerDraw, th),
@@ -165,7 +165,7 @@ const minefarmbuyScraper = async () => {
             )}`;
 
             minefarmbuyData.push({
-              seller: "minefarmbuy",
+              vendor: "minefarmbuy",
               model,
               th: Number(th.split(/th/i)[0]),
               watts: convertPowerDraw(effic, th),
