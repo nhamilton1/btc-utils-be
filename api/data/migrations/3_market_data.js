@@ -5,6 +5,7 @@ exports.up = async (knex) => {
       table.string("model");
       table.float("price");
       table.string("date");
+
     });
   };
   

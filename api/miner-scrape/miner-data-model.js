@@ -1,5 +1,15 @@
 const db = require("../data/db-config");
 
+const getMinerData = async () => {
+  const minerData = await db("miner_data").select(
+    "model",
+    "th",
+    "watts",
+    "efficiency",
+  );
+  return minerData
+};
+
 const addMinerData = async (item) => {
   const minerData = item.map((x) => ({
     model: x.model,
@@ -17,5 +27,6 @@ const addMinerData = async (item) => {
 };
 
 module.exports = {
+  getMinerData,
   addMinerData,
 };

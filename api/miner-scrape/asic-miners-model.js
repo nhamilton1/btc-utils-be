@@ -1,58 +1,37 @@
 const db = require("../data/db-config");
 
 const getAll = async () => {
-  const asics = await db("asic_data").select(
-    "seller",
-    "model",
-    "th",
-    "watts",
-    "efficiency",
-    "price",
-    "date"
-  );
+  const asics = await db("market_data as market")
+    .join("miner_data as miner", "miner.model", "market.model")
+    .select(
+      "market.vendor",
+      "market.price",
+      "market.date",
+      "market.model",
+      "miner.th",
+      "miner.watts",
+      'miner.efficiency'
+    ).orderBy('date', 'desc')
   return asics;
 };
 
-const add = async (item) => {
-  const asicData = item.map((x) => ({
-    id: x.id,
-    seller: x.seller,
-    model: x.model,
-    th: x.th,
-    watts: x.watts,
-    efficiency: x.efficiency,
-    price: x.price,
-    date: x.date,
-  }));
-  const [newItemObject] = await db("asic_data").insert(asicData, [
-    "id",
-    "seller",
-    "model",
-    "th",
-    "watts",
-    "efficiency",
-    "price",
-    "date",
-  ]);
-  return newItemObject;
-};
-
 const getAllIds = async () => {
-  const asics = await db("asic_data").select(
-    "id",
-    "seller",
-    "model",
-    "th",
-    "watts",
-    "efficiency",
-    "price",
-    "date"
-  );
+  const asics = await db("market_data as market")
+    .join("miner_data as miner", "miner.model", "market.model")
+    .select(
+      "market.id",
+      "market.vendor",
+      "market.price",
+      "market.date",
+      "market.model",
+      "miner.th",
+      "miner.watts",
+      'miner.efficiency'
+    );
   return asics;
 };
 
 module.exports = {
   getAll,
-  add,
   getAllIds,
 };
