@@ -8,7 +8,6 @@ const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
 // const { mfbScraper } = require("./newMFB-crawler");
 
 const asicData = async (req, res, next) => {
-  console.time('time')
   try {
     const asic = await Asics.getAllIds();
     const minerInfo = await MinerData.getMinerData();
@@ -50,7 +49,6 @@ const asicData = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-  console.timeEnd("time")
 };
 
 module.exports = {
