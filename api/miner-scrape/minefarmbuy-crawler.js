@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { sha1, convertPowerDraw } = require("./helpers");
+const { sha1, convertPowerDraw, convertEfficiency } = require("./helpers");
 const moment = require("moment");
 
 const minefarmbuyScraper = async () => {
@@ -40,17 +40,22 @@ const minefarmbuyScraper = async () => {
     for (const url of uniqUrls.values()) {
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
+      const asicModel = await page.$eval(
+        "div > div.summary.entry-summary > h1",
+        (el) => el.innerText
+      );
+
       //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
       const incoterms = await page.$$eval("#incoterms > option", (node) =>
         node.map((th) => th.innerText)
       );
 
       //checks for efficiency dropdown when page first loads
-      const efficiency = await page.$$eval("#efficiency > option", (node) =>
+      const effici = await page.$$eval("#efficiency > option", (node) =>
         node.map((th) => th.innerText)
       );
 
-      const filteredEfficiency = efficiency.filter((t) => t.match(/J\/th/i));
+      const filteredEfficiency = effici.filter((t) => t.match(/J\/th/i));
 
       //$$evail on most because if it was undefined, it would crash
       //could move this down to the if statement and make it $eval
@@ -89,18 +94,24 @@ const minefarmbuyScraper = async () => {
             (node) => node.map((price) => price.innerText)
           );
 
-          const asicName = await page.$eval(
-            "div > div.summary.entry-summary > div.product_meta > span.sku_wrapper > span",
-            (el) => el.innerText
-          );
-
           const powerDraw = await page.$eval(
             "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
             (el) => el.innerText
           );
 
+          // having this filter so the regex knows where to stop
+          // the replace removes the first space if they leave a space
+          // between the ++ like in M30s ++ should be M30s++
+          const asicNameFilter = `${asicModel.replace(/\s+(\W)/g, "$1")} abc`;
+          const asicName =
+            asicNameFilter.match(/(?=Whatsminer\s*).*?(?=\s*abc)/gs) ||
+            asicNameFilter.match(/(?=Antminer\s*).*?(?=\s*abc)/gs) ||
+            asicNameFilter.match(/(?=Canaan\s*).*?(?=\s*abc)/gs);
+
+          const model = `${asicName[0]} ${Number(th.split(/th/i)[0])}T`;
+
           //creating a unique id so later i can use it to check already found miners
-          let id = `minefarmbuy ${asicName} ${
+          let id = `minefarmbuy ${model} ${
             asicPrice[0] === undefined
               ? Number(
                   ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
@@ -109,17 +120,18 @@ const minefarmbuyScraper = async () => {
           }`;
 
           minefarmbuyData.push({
-            seller: "minefarmbuy",
-            asic: asicName,
-            th,
+            vendor: "minefarmbuy",
+            model,
+            th: Number(th.split(/th/i)[0]),
             watts: convertPowerDraw(powerDraw, th),
+            efficiency: convertEfficiency(powerDraw, th),
             price:
               asicPrice[0] === undefined
                 ? Number(
                     ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
                   )
                 : Number(asicPrice[0].replace("$", "").replace(",", "")),
-            date: moment().format("MMMM Do YYYY"),
+            date: moment().format("MM-DD-YYYY"),
             id: sha1(id),
           });
         }
@@ -144,22 +156,22 @@ const minefarmbuyScraper = async () => {
               (node) => node.map((price) => price.innerText)
             );
 
-            const asicName = await page.$eval(
-              "div > div.summary.entry-summary > div.product_meta > span.sku_wrapper > span",
-              (el) => el.innerText
-            );
+            const model = `${asicModel} ${th.split(/th/i)[0]}T ${
+              effic.split(/j\/th/i)[0]
+            }J/th`;
 
-            let id = `minefarmbuy ${asicName} ${Number(
+            let id = `minefarmbuy ${model} ${Number(
               asicPrice[0].replace("$", "").replace(",", "")
             )}`;
 
             minefarmbuyData.push({
-              seller: "minefarmbuy",
-              asic: asicName,
-              th,
+              vendor: "minefarmbuy",
+              model,
+              th: Number(th.split(/th/i)[0]),
               watts: convertPowerDraw(effic, th),
+              efficiency: Number(effic.split(/j\/th/i)[0]),
               price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-              date: moment().format("MMMM Do YYYY"),
+              date: moment().format("MM-DD-YYYY"),
               id: sha1(id),
             });
           }
