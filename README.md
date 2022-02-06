@@ -55,22 +55,26 @@ asic price data:
 ```
 [
   {
-      "seller": "Kaboomracks",
-      "asic": "Whatsminer M31S+ 82T 42 W/T",
-      "th": "82T",
-      "price": 5699,
-      "date": "January 30th, 2022"
+    "vendor": "Kaboomracks",
+    "price": 13123,
+    "date": "02-05-2022",
+    "model": "Antminer S19j Pro 104T",
+    "th": 104,
+    "watts": 3068,
+    "efficiency": 29.5
   },
   {
-      "seller": "minefarmbuy",
-      "asic": "M30S-PLUS-2-110T-31J",
-      "th": "110th/s (+/- 5%)",
-      "price": 11045,
-      "date": "January 30th 2022"
+    "vendor": "minefarmbuy",
+    "price": 12625,
+    "date": "02-05-2022",
+    "model": "Antminer S19j Pro 104T",
+    "th": 104,
+    "watts": 3068,
+    "efficiency": 29.5
   },
 ]
 ```
 
-| Method | URL         | Description                                                                                                                                                                                                            |
-| ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [GET]  | /api/asics/ | returns the seller of the asic, the name of the asic with th, price, and the date. As for the date, with minefarmbuy, it just uses the date when it was first scraped. Kaboomracks uses the date of when it was posted |
+| Method | URL         | Description                                                                                                                                                                                                                                |
+| ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [GET]  | /api/asics/ | returns the vendor of the asic, the model of the asic with th, price, the date, watts, and efficiency. As for the date, with minefarmbuy, it just uses the date when it was first scraped. Kaboomracks uses the date of when it was posted |
