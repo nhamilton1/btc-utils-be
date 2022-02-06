@@ -46,7 +46,7 @@ const kaboomracksScraper = async () => {
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
 
-        date = moment(date).format('MM-DD-YYYY')
+        date = moment(new Date(date)).format('MM-DD-YYYY')
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
@@ -106,8 +106,7 @@ const kaboomracksScraper = async () => {
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
 
-        date = moment(date).format('MM-DD-YYYY')
-
+        date = moment(new Date(date)).format('MM-DD-YYYY')
 
         let asicModel = minerData.match(
           /(?=Whatsminer M\s*).*?(?=\s*for)/gs
@@ -163,9 +162,8 @@ const kaboomracksScraper = async () => {
           .split(" ")
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
-
-        date = moment(date).format('MM-DD-YYYY')
-
+          
+        date = moment(new Date(date)).format('MM-DD-YYYY')
 
         let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let asicSearchName = minerData
