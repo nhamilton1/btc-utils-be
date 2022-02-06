@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { sha1 } = require("./helpers");
+const { sha1, convertPowerDraw, convertEfficiency } = require("./helpers");
 const moment = require("moment");
 
 const mfbScraper = async () => {
@@ -54,8 +54,26 @@ const mfbScraper = async () => {
     return Promise.all(
       urls.map(async (url) => {
         return withPage(browser)(async (page) => {
+          await page.setViewport({ width: 1920, height: 1080 });
+          await page.setRequestInterception(true);
+          page.on("request", (req) => {
+            if (
+              req.resourceType() == "stylesheet" ||
+              req.resourceType() == "font" ||
+              req.resourceType() == "image"
+            ) {
+              req.abort();
+            } else {
+              req.continue();
+            }
+          });
           let minefarmbuyData = [];
           await page.goto(url, { waitUntil: "domcontentloaded" });
+
+          const asicModel = await page.$eval(
+            "div > div.summary.entry-summary > h1",
+            (el) => el.innerText
+          );
 
           //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
           const incoterms = await page.$$eval("#incoterms > option", (node) =>
@@ -63,13 +81,11 @@ const mfbScraper = async () => {
           );
 
           //checks for efficiency dropdown when page first loads
-          const efficiency = await page.$$eval("#efficiency > option", (node) =>
+          const effici = await page.$$eval("#efficiency > option", (node) =>
             node.map((th) => th.innerText)
           );
 
-          const filteredEfficiency = efficiency.filter((t) =>
-            t.match(/J\/th/i)
-          );
+          const filteredEfficiency = effici.filter((t) => t.match(/J\/th/i));
 
           //$$evail on most because if it was undefined, it would crash
           //could move this down to the if statement and make it $eval
@@ -78,16 +94,6 @@ const mfbScraper = async () => {
             "div > div.summary.entry-summary > p > span > bdi",
             (el) => el.map((e) => e.innerText)
           );
-
-          //checks for hashrate dropdown when page first loads
-          const hashOption = await page.$$eval("#hashrate > option", (node) =>
-            node.map((th) => th.innerText)
-          );
-
-          //filters values for only ths, no batches or option value
-          const filterHashrateOptions = hashOption.filter((t) => {
-            return t.match(/th/i) && parseInt(Number(t.charAt(0)));
-          });
 
           //checks for OoS
           //had to include this, would crash if it could not find it
@@ -99,22 +105,46 @@ const mfbScraper = async () => {
 
           //no incoterms dropdown and no efficiency dropdown
           if (incoterms.length === 0 && filteredEfficiency.length === 0) {
+            //checks for hashrate dropdown when page first loads
+            const hashOption = await page.$$eval("#hashrate > option", (node) =>
+              node.map((th) => th.innerText)
+            );
+
+            //filters values for only ths, no batches or option value
+            const filterHashrateOptions = hashOption.filter((t) => {
+              return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+            });
+
             //loops through the filtered options and sets the data
-            for (const hash of filterHashrateOptions.values()) {
-              await page.select("select#hashrate", hash);
+            for (const th of filterHashrateOptions.values()) {
+              await page.select("select#hashrate", th);
 
               const asicPrice = await page.$$eval(
                 "div > div > form > div > div > div > span > span > bdi",
                 (node) => node.map((price) => price.innerText)
               );
 
-              const asicName = await page.$eval(
-                "div > div.summary.entry-summary > div.product_meta > span.sku_wrapper > span",
+              const powerDraw = await page.$eval(
+                "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
                 (el) => el.innerText
               );
 
+              // having this filter so the regex knows where to stop
+              // the replace removes the first space if they leave a space
+              // between the ++ like in M30s ++ should be M30s++
+              const asicNameFilter = `${asicModel.replace(
+                /\s+(\W)/g,
+                "$1"
+              )} abc`;
+              const asicName =
+                asicNameFilter.match(/(?=Whatsminer\s*).*?(?=\s*abc)/gs) ||
+                asicNameFilter.match(/(?=Antminer\s*).*?(?=\s*abc)/gs) ||
+                asicNameFilter.match(/(?=Canaan\s*).*?(?=\s*abc)/gs);
+
+              const model = `${asicName[0]} ${Number(th.split(/th/i)[0])}T`;
+
               //creating a unique id so later i can use it to check already found miners
-              let id = `minefarmbuy ${asicName} ${
+              let id = `minefarmbuy ${model} ${
                 asicPrice[0] === undefined
                   ? Number(
                       ifNoPriceFromAsicPrice[0]
@@ -125,9 +155,11 @@ const mfbScraper = async () => {
               }`;
 
               minefarmbuyData.push({
-                seller: "minefarmbuy",
-                asic: asicName,
-                th: hash,
+                vendor: "minefarmbuy",
+                model,
+                th: Number(th.split(/th/i)[0]),
+                watts: convertPowerDraw(powerDraw, th),
+                efficiency: convertEfficiency(powerDraw, th),
                 price:
                   asicPrice[0] === undefined
                     ? Number(
@@ -136,7 +168,7 @@ const mfbScraper = async () => {
                           .replace(",", "")
                       )
                     : Number(asicPrice[0].replace("$", "").replace(",", "")),
-                date: moment().format("MMMM Do YYYY"),
+                date: moment().format("MM-DD-YYYY"),
                 id: sha1(id),
               });
             }
@@ -161,21 +193,22 @@ const mfbScraper = async () => {
                   (node) => node.map((price) => price.innerText)
                 );
 
-                const asicName = await page.$eval(
-                  "div > div.summary.entry-summary > div.product_meta > span.sku_wrapper > span",
-                  (el) => el.innerText
-                );
+                const model = `${asicModel} ${th.split(/th/i)[0]}T ${
+                  effic.split(/j\/th/i)[0]
+                }J/th`;
 
-                let id = `minefarmbuy ${asicName} ${Number(
+                let id = `minefarmbuy ${model} ${Number(
                   asicPrice[0].replace("$", "").replace(",", "")
                 )}`;
 
                 minefarmbuyData.push({
-                  seller: "minefarmbuy",
-                  asic: asicName,
-                  th,
+                  vendor: "minefarmbuy",
+                  model,
+                  th: Number(th.split(/th/i)[0]),
+                  watts: convertPowerDraw(effic, th),
+                  efficiency: Number(effic.split(/j\/th/i)[0]),
                   price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-                  date: moment().format("MMMM Do YYYY"),
+                  date: moment().format("MM-DD-YYYY"),
                   id: sha1(id),
                 });
               }

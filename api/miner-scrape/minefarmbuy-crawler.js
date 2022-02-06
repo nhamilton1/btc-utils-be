@@ -12,6 +12,19 @@ const minefarmbuyScraper = async () => {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      if (
+        req.resourceType() == "stylesheet" ||
+        req.resourceType() == "font" ||
+        req.resourceType() == "image"
+      ) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
     await page.goto("https://minefarmbuy.com/product-category/btc-asics/", {
       waitUntil: "domcontentloaded",
     });
@@ -131,7 +144,7 @@ const minefarmbuyScraper = async () => {
                     ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
                   )
                 : Number(asicPrice[0].replace("$", "").replace(",", "")),
-            date: moment().format("MMMM DD YYYY"),
+            date: moment().format("MM-DD-YYYY"),
             id: sha1(id),
           });
         }
@@ -171,7 +184,7 @@ const minefarmbuyScraper = async () => {
               watts: convertPowerDraw(effic, th),
               efficiency: Number(effic.split(/j\/th/i)[0]),
               price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-              date: moment().format("MMMM DD YYYY"),
+              date: moment().format("MM-DD-YYYY"),
               id: sha1(id),
             });
           }
