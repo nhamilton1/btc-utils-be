@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const moment = require("moment");
 const { sha1 } = require("./helpers");
 const asicWattList = require("./asicWattList");
 
@@ -40,7 +41,12 @@ const kaboomracksScraper = async () => {
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
           //removes the invalid chars
-          .replace(/[^\x20-\x7E]/g, "");
+          .replace(/[^\x20-\x7E]/g, "")
+          .split(" ")
+          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+          .join(" ");
+
+        date = moment(date).format("MM-DD-YYYY");
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
@@ -95,7 +101,13 @@ const kaboomracksScraper = async () => {
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-          .replace(/[^\x20-\x7E]/g, "");
+          .replace(/[^\x20-\x7E]/g, "")
+          .split(" ")
+          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+          .join(" ");
+
+        date = moment(date).format("MM-DD-YYYY");
+
         let asicModel = minerData.match(
           /(?=Whatsminer M\s*).*?(?=\s*for)/gs
         )[0];
@@ -146,7 +158,13 @@ const kaboomracksScraper = async () => {
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
         let date = minerData
           .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-          .replace(/[^\x20-\x7E]/g, "");
+          .replace(/[^\x20-\x7E]/g, "")
+          .split(" ")
+          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+          .join(" ");
+
+        date = moment(date).format("MM-DD-YYYY");
+
         let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let asicSearchName = minerData
           .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)[0]
