@@ -12,11 +12,6 @@ const mfbScraper = async () => {
         "--no-sandbox",
         "--disable-setuid-sandbox",
         '--js-flags="--max-old-space-size=500"',
-        '--disable-accelerated-2d-canvas',
-        '--disable-dev-shm-usage',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
       ],
     });
     try {
