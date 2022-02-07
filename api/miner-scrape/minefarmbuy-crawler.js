@@ -144,7 +144,7 @@ const minefarmbuyScraper = async () => {
                     ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
                   )
                 : Number(asicPrice[0].replace("$", "").replace(",", "")),
-            date: moment().format("MM-DD-YYYY"),
+            date: moment(new Date()).format("MM-DD-YYYY"),
             id: sha1(id),
           });
         }
@@ -184,7 +184,7 @@ const minefarmbuyScraper = async () => {
               watts: convertPowerDraw(effic, th),
               efficiency: Number(effic.split(/j\/th/i)[0]),
               price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-              date: moment().format("MM-DD-YYYY"),
+              date: moment(new Date()).format("MM-DD-YYYY"),
               id: sha1(id),
             });
           }

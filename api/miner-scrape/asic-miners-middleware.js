@@ -7,35 +7,9 @@ const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
 // took up mem=643M(125.7%)
 // const { mfbScraper } = require("./newMFB-crawler");
 
-const firstLoad = async (req, res, next) => {
-  const asic = await Asics.getAllIds();
-
-  if (asic.length === 0) {
-    try {
-      const scrapeForMFBData = await minefarmbuyScraper();
-      const scrapeForKaboomData = await kaboomracksScraper();
-      const allData = scrapeForMFBData.concat(scrapeForKaboomData);
-
-      const minerInfoFirstDupCheck = scrapeForMFBData.filter(
-        (scapeData) =>
-          !scrapeForKaboomData.find(
-            (allAsicData) => scapeData.model === allAsicData.model
-          )
-      );
-      const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
-      await MinerData.addMinerData(firstDataInput);
-      await MarketData.addMarketData(allData);
-      next();
-    } catch (error) {
-      next(error);
-    }
-  } else {
-    next();
-  }
-};
-
 const asicData = async (req, res, next) => {
   try {
+    const asic = await Asics.getAllIds();
     const minerInfo = await MinerData.getMinerData();
     const marketInfo = await MarketData.getMarketData();
     const scrapeForMFBData = await minefarmbuyScraper();
@@ -52,11 +26,21 @@ const asicData = async (req, res, next) => {
         !marketInfo.find((allAsicData) => scapeData.id === allAsicData.id)
     );
 
-    if (minerInfoDupCheck.length > 0) {
+    if (asic.length === 0) {
+      const minerInfoFirstDupCheck = scrapeForMFBData.filter(
+        (scapeData) =>
+          !scrapeForKaboomData.find(
+            (allAsicData) => scapeData.model === allAsicData.model
+          )
+      );
+      const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
+      await MinerData.addMinerData(firstDataInput);
+      await MarketData.addMarketData(allData);
+      next();
+    } else if (minerInfoDupCheck.length > 0) {
       await MinerData.addMinerData(minerInfoDupCheck);
       next();
-    }
-    if (marketInfoDupCheck.length > 0) {
+    } else if (marketInfoDupCheck.length > 0) {
       await MarketData.addMarketData(marketInfoDupCheck);
       next();
     } else {
@@ -68,6 +52,5 @@ const asicData = async (req, res, next) => {
 };
 
 module.exports = {
-  firstLoad,
   asicData,
 };
