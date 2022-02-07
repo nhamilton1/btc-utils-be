@@ -13,9 +13,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/asics-scheduler", asicData, async (req, res, next) => {
   try {
-    res.json({
-      message: 'I hope it worked'
-    });
+    const asicMiners = await Asics.getAll();
+    res.json(asicMiners);
   } catch (err) {
     next(err);
   }

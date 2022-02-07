@@ -2,17 +2,17 @@ const Asics = require("./asic-miners-model");
 const MarketData = require("./market-data-model");
 const MinerData = require("./miner-data-model");
 const { kaboomracksScraper } = require("./kaboomracks-crawler");
-const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
+// const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
 // this takes up too much memory for heroku and would have to pay to use it.
 // took up mem=643M(125.7%)
-// const { mfbScraper } = require("./newMFB-crawler");
+const { mfbScraper } = require("./newMFB-crawler");
 
 const asicData = async (req, res, next) => {
   try {
     const asic = await Asics.getAllIds();
     const minerInfo = await MinerData.getMinerData();
     const marketInfo = await MarketData.getMarketData();
-    const scrapeForMFBData = await minefarmbuyScraper();
+    const scrapeForMFBData = await mfbScraper();
     const scrapeForKaboomData = await kaboomracksScraper();
     const allData = scrapeForMFBData.concat(scrapeForKaboomData);
 

@@ -3,12 +3,21 @@ const { sha1, convertPowerDraw, convertEfficiency } = require("./helpers");
 const moment = require("moment");
 
 const mfbScraper = async () => {
+  console.time('time')
   const withBrowser = async (fn) => {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
     const browser = await puppeteer.launch({
-      slowMo: 1,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        '--js-flags="--max-old-space-size=500"',
+        '--disable-accelerated-2d-canvas',
+        '--disable-dev-shm-usage',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+      ],
     });
     try {
       return await fn(browser);
@@ -226,6 +235,7 @@ const mfbScraper = async () => {
 
   results.filter((data) => data.length > 0);
   let flattened = [].concat(...results);
+  console.timeEnd('time')
   return flattened;
 };
 
