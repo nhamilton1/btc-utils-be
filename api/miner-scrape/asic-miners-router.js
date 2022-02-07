@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Asics = require("./asic-miners-model");
-const { asicData } = require('./asic-miners-middleware')
+const { asicData, firstLoad } = require('./asic-miners-middleware')
 
 router.get("/", async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/asics-scheduler", asicData, async (req, res, next) => {
+router.get("/asics-scheduler", firstLoad, asicData, async (req, res, next) => {
   try {
     const asicMiners = await Asics.getAll();
     res.json(asicMiners);
