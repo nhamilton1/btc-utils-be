@@ -3,7 +3,6 @@ const { sha1, convertPowerDraw, convertEfficiency } = require("./helpers");
 const moment = require("moment");
 
 const mfbScraper = async () => {
-  console.time('time')
   const withBrowser = async (fn) => {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
@@ -230,7 +229,6 @@ const mfbScraper = async () => {
 
   results.filter((data) => data.length > 0);
   let flattened = [].concat(...results);
-  console.timeEnd('time')
   return flattened;
 };
 
