@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const moment = require('moment')
+const moment = require("moment");
 const { sha1 } = require("./helpers");
 const asicWattList = require("./asicWattList");
 
@@ -46,7 +46,7 @@ const kaboomracksScraper = async () => {
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
 
-        date = moment(new Date(date)).format('MM-DD-YYYY')
+        date = moment(new Date(date)).format("MM-DD-YYYY");
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
@@ -106,7 +106,7 @@ const kaboomracksScraper = async () => {
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
 
-        date = moment(new Date(date)).format('MM-DD-YYYY')
+        date = moment(new Date(date)).format("MM-DD-YYYY");
 
         let asicModel = minerData.match(
           /(?=Whatsminer M\s*).*?(?=\s*for)/gs
@@ -162,8 +162,8 @@ const kaboomracksScraper = async () => {
           .split(" ")
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
           .join(" ");
-          
-        date = moment(new Date(date)).format('MM-DD-YYYY')
+
+        date = moment(new Date(date)).format("MM-DD-YYYY");
 
         let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let asicSearchName = minerData
@@ -172,48 +172,77 @@ const kaboomracksScraper = async () => {
           .slice(0, -1)
           .join(" ");
 
-        let th = Number(
-          asicModel
-            .split(" ")
-            .filter((e) =>
-              e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
-            )[0]
-            .replace("T", "")
-        );
+        if (asicModel.includes("T")) {
+          let th = Number(
+            asicModel
+              .split(" ")
+              .filter((e) =>
+                e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
+              )[0]
+              .replace("T", "")
+          );
 
-        const asicName = asicModel.match(/(?=Canaan A\s*).*?(?=\s*T)/gs);
-        // asicNameFilter.match(/(?=Antminer S\s*).*?(?=\s*abc)/gs) ||
+          const asicName = asicModel.match(/(?=Canaan A\s*).*?(?=\s*T)/gs);
 
-        let watts =
-          asicWattList[asicSearchName][th] !== undefined
-            ? asicWattList[asicSearchName][th]
-            : asicWattList[asicSearchName]["wt"] * Number(th);
+          let watts =
+            asicWattList[asicSearchName][th] !== undefined
+              ? asicWattList[asicSearchName][th]
+              : asicWattList[asicSearchName]["wt"] * Number(th);
 
-        let efficiency = watts / th;
-        let model = `${asicName[0]}T`;
-        let id = vendor + model + price + date;
+          let efficiency = watts / th;
+          let model = `${asicName[0]}T`;
+          let id = vendor + model + price + date;
 
-        asics.push({
-          vendor,
-          model,
-          th,
-          watts,
-          efficiency,
-          price,
-          date,
-          id: sha1(id),
-        });
+          asics.push({
+            vendor,
+            model,
+            th,
+            watts,
+            efficiency,
+            price,
+            date,
+            id: sha1(id),
+          });
+        } else if (!asicModel.includes("T")) {
+          let th = Number(
+            minerData.match(/(?=[ㄴ]\s*).*?(?=\s*Th\/s)/gs)[0].split(" ")[1]
+          );
+          const asicName = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
+
+          let watts =
+            asicWattList[asicName][th] !== undefined
+              ? asicWattList[asicName][th]
+              : asicWattList[asicName]["wt"] * Number(th);
+
+          let efficiency = watts / th;
+          let model = asicName;
+          let id = vendor + model + price + date;
+
+          asics.push({
+            vendor,
+            model,
+            th,
+            watts,
+            efficiency,
+            price,
+            date,
+            id: sha1(id),
+          });
+        }
       }
     });
 
     //filters for dups
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
+    console.log(filtered);
     return filtered;
   } catch (err) {
     console.error(err);
   }
 };
+
+kaboomracksScraper();
 
 module.exports = {
   kaboomracksScraper,
