@@ -49,7 +49,27 @@ const asicWattList = {
   "Canaan Avalonminer 1066": {
     wt: 65,
     50: 3250,
-  }
+  },
+  "Canaan Avalonminer 1246": {
+    wt: 38,
+    90: 3420,
+  },
+  "Canaan Avalonminer 1166": {
+    wt: 47,
+    68: 3196,
+  },
+  "Canaan Avalonminer 1166 Pro": {
+    wt: 42,
+    81: 3402,
+  },
+  "Canaan Avalonminer 1146": {
+    wt: 57,
+    56: 3196,
+  },
+  "Canaan Avalonminer 1146 Pro": {
+    wt: 52,
+    63: 3276,
+  },
 };
 
 module.exports = asicWattList;
