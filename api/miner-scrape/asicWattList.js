@@ -1,5 +1,8 @@
 //wt represents watts per th
 const asicWattList = {
+  "Bitmain Antminer S9": {
+    13.5: 1323,
+  },
   "Bitmain Antminer S19 Pro": {
     110: 3250,
   },
@@ -8,7 +11,6 @@ const asicWattList = {
     104: 3068,
     100: 3050,
     96: 2832,
-
   },
   "Bitmain Antminer S19": {
     wt: 30,

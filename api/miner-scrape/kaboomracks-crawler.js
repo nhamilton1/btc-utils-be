@@ -58,38 +58,83 @@ const kaboomracksScraper = async () => {
           .slice(0, -1)
           .join(" ");
 
-        let th = Number(
-          asicModel
-            .split(" ")
-            .filter((e) =>
-              e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
-            )[0]
-            .replace("T", "")
-        );
 
-        const asicName = asicModel.match(/(?=Antminer S\s*).*?(?=\s*T)/gs);
+        if (asicModel.includes("T") && !asicModel.includes("(")) {
+          let th = Number(
+            asicModel
+              .split(" ")
+              .filter((e) =>
+                e.includes("T") && Number.isInteger(Number(e[0])) ? e[0] : null
+              )[0]
+              .replace("T", "")
+          );
 
-        //gets the watts from the asic watt list, remove the t from the th var
-        //if there isnt a match it will take the wt and * it by the th
-        let watts =
-          asicWattList[asicSearchName][th] !== undefined
-            ? asicWattList[asicSearchName][th]
-            : asicWattList[asicSearchName]["wt"] * Number(th);
+          const asicName = asicModel.match(/(?=Antminer S\s*).*?(?=\s*T)/gs);
 
-        let efficiency = watts / th;
-        let model = `${asicName[0]}T`;
-        let id = vendor + model + price + date;
+          //gets the watts from the asic watt list, remove the t from the th var
+          //if there isnt a match it will take the wt and * it by the th
+          let watts =
+            asicWattList[asicSearchName][th] !== undefined
+              ? asicWattList[asicSearchName][th]
+              : asicWattList[asicSearchName]["wt"] * Number(th);
 
-        asics.push({
-          vendor,
-          model,
-          th,
-          watts,
-          efficiency,
-          price,
-          date,
-          id: sha1(id),
-        });
+          let efficiency = watts / th;
+          let model = `${asicName[0]}T`;
+          let id = vendor + model + price + date;
+
+          asics.push({
+            vendor,
+            model,
+            th,
+            watts,
+            efficiency,
+            price,
+            date,
+            id: sha1(id),
+          });
+        } else if (asicModel.includes("(")) {
+          //had to add this for inconsistant post with S9s with th like (13.5Th/s)
+          //and had to fix how the date was pulled. Still might have to add another
+          //statement for when just Th/s is used
+          let date = minerData
+          .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)[0]
+          //removes the invalid chars
+          .replace(/[^\x20-\x7E]/g, "")
+          .split(" ")
+          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+          .join(" ");
+
+          date = moment(new Date(date)).format("MM-DD-YYYY");
+          let th = Number(
+            asicModel
+              .split(" ")
+              .filter((e) => e.includes("("))[0]
+              .replace("(", "")
+          );
+          const asicName = asicModel
+            .match(/(?=Antminer S\s*).*?(?=\s*T)/gs)[0]
+            .replace("(", "");
+
+          let watts =
+            asicWattList[asicSearchName][th] !== undefined
+              ? asicWattList[asicSearchName][th]
+              : asicWattList[asicSearchName]["wt"] * Number(th);
+
+          let efficiency = watts / th;
+          let model = `${asicName}T`;
+          let id = vendor + model + price + date;
+
+          asics.push({
+            vendor,
+            model,
+            th,
+            watts,
+            efficiency,
+            price,
+            date,
+            id: sha1(id),
+          });
+        }
       }
 
       if (
