@@ -58,7 +58,6 @@ const kaboomracksScraper = async () => {
           .slice(0, -1)
           .join(" ");
 
-
         if (asicModel.includes("T") && !asicModel.includes("(")) {
           let th = Number(
             asicModel
@@ -97,12 +96,12 @@ const kaboomracksScraper = async () => {
           //and had to fix how the date was pulled. Still might have to add another
           //statement for when just Th/s is used
           let date = minerData
-          .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)[0]
-          //removes the invalid chars
-          .replace(/[^\x20-\x7E]/g, "")
-          .split(" ")
-          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-          .join(" ");
+            .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)[0]
+            //removes the invalid chars
+            .replace(/[^\x20-\x7E]/g, "")
+            .split(" ")
+            .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+            .join(" ");
 
           date = moment(new Date(date)).format("MM-DD-YYYY");
           let th = Number(
@@ -201,14 +200,37 @@ const kaboomracksScraper = async () => {
       ) {
         let vendor = "Kaboomracks";
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
-        let date = minerData
-          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-          .replace(/[^\x20-\x7E]/g, "")
-          .split(" ")
-          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-          .join(" ");
-
-        date = moment(new Date(date)).format("MM-DD-YYYY");
+        let date = moment(
+          new Date(
+            minerData
+              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+              .replace(/[^\x20-\x7E]/g, "")
+              .split(" ")
+              .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+              .join(" ")
+          )
+        ).isValid()
+          ? moment(
+              new Date(
+                minerData
+                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+                  .replace(/[^\x20-\x7E]/g, "")
+                  .split(" ")
+                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                  .join(" ")
+              )
+            ).format("MM-DD-YYYY")
+          : moment(
+              new Date(
+                minerData
+                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)[0]
+                  .replace(/[^\x20-\x7E]/g, "")
+                  .replace("| ", "")
+                  .split(" ")
+                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                  .join(" ")
+              )
+            ).format("MM-DD-YYYY");
 
         let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
         let asicSearchName = minerData
@@ -280,12 +302,14 @@ const kaboomracksScraper = async () => {
     //filters for dups
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
+    console.log(filtered);
     return filtered;
   } catch (err) {
     console.error(err);
   }
 };
 
+kaboomracksScraper();
 module.exports = {
   kaboomracksScraper,
 };
