@@ -8,8 +8,7 @@ const minefarmbuyScraper = async () => {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
     browser = await puppeteer.launch({
-      slowMo: 20,
-      headless: false,
+      slowMo: 5,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -207,14 +206,12 @@ const minefarmbuyScraper = async () => {
     }
 
     await browser.close();
-    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
   }
 };
 
-minefarmbuyScraper();
 module.exports = {
   minefarmbuyScraper,
 };

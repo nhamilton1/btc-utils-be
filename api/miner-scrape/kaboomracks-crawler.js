@@ -302,14 +302,12 @@ const kaboomracksScraper = async () => {
     //filters for dups
     const ids = asics.map((a) => a.id);
     const filtered = asics.filter(({ id }, idx) => !ids.includes(id, idx + 1));
-    console.log(filtered);
     return filtered;
   } catch (err) {
     console.error(err);
   }
 };
 
-kaboomracksScraper();
 module.exports = {
   kaboomracksScraper,
 };
