@@ -8,7 +8,8 @@ const minefarmbuyScraper = async () => {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
     browser = await puppeteer.launch({
-      slowMo: 5,
+      slowMo: 20,
+      headless: false,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -164,10 +165,17 @@ const minefarmbuyScraper = async () => {
           for (const th of efficiencyHashrateOpt.values()) {
             await page.select("select#hashrate", th);
 
-            const asicPrice = await page.$$eval(
+            let asicPrice = await page.$$eval(
               "div > div > form > div > div > div > span > span > bdi",
               (node) => node.map((price) => price.innerText)
             );
+
+            if (asicPrice.length === 0) {
+              asicPrice = await page.$$eval(
+                "div > div.summary.entry-summary > p > span > bdi",
+                (node) => node.map((price) => price.innerText)
+              );
+            }
 
             const model = `${asicModel} ${th.split(/th/i)[0]}T ${
               effic.split(/j\/th/i)[0]
@@ -199,12 +207,14 @@ const minefarmbuyScraper = async () => {
     }
 
     await browser.close();
+    console.log(minefarmbuyData);
     return minefarmbuyData;
   } catch (err) {
     console.error("Could not create a browser instance => : ", err);
   }
 };
 
+minefarmbuyScraper();
 module.exports = {
   minefarmbuyScraper,
 };
