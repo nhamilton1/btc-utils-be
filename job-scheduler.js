@@ -100,37 +100,41 @@ const addMinerData = async (item) => {
 
 const scheduler = async () => {
   console.time("time");
-  const asic = await getAllIds();
-  const marketInfo = await getMarketData();
-  const minerInfo = await getMinerData();
-  const scrapeForMFBData = await minefarmbuyScraper();
-  const scrapeForKaboomData = await kaboomracksScraper();
-  const allData = scrapeForMFBData.concat(scrapeForKaboomData);
+  try {
+    const asic = await getAllIds();
+    const marketInfo = await getMarketData();
+    const minerInfo = await getMinerData();
+    const scrapeForMFBData = await minefarmbuyScraper();
+    const scrapeForKaboomData = await kaboomracksScraper();
+    const allData = scrapeForMFBData.concat(scrapeForKaboomData);
 
-  const minerInfoDupCheck = allData.filter(
-    (scapeData) =>
-      !minerInfo.find((allAsicData) => scapeData.model === allAsicData.model)
-  );
-  const marketInfoDupCheck = allData.filter(
-    (scapeData) =>
-      !marketInfo.find((allAsicData) => scapeData.id === allAsicData.id)
-  );
-  if (asic.length === 0) {
-    const minerInfoFirstDupCheck = scrapeForMFBData.filter(
+    const minerInfoDupCheck = allData.filter(
       (scapeData) =>
-        !scrapeForKaboomData.find(
-          (allAsicData) => scapeData.model === allAsicData.model
-        )
+        !minerInfo.find((allAsicData) => scapeData.model === allAsicData.model)
     );
-    const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
-    await addMinerData(firstDataInput);
-    await addMarketData(allData);
-  } else if (minerInfoDupCheck.length > 0) {
-    await addMinerData(minerInfoDupCheck);
-  } else if (marketInfoDupCheck.length > 0) {
-    await addMarketData(marketInfoDupCheck);
-  } else {
-    await db.destroy();
+    const marketInfoDupCheck = allData.filter(
+      (scapeData) =>
+        !marketInfo.find((allAsicData) => scapeData.id === allAsicData.id)
+    );
+    if (asic.length === 0) {
+      const minerInfoFirstDupCheck = scrapeForMFBData.filter(
+        (scapeData) =>
+          !scrapeForKaboomData.find(
+            (allAsicData) => scapeData.model === allAsicData.model
+          )
+      );
+      const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
+      await addMinerData(firstDataInput);
+      await addMarketData(allData);
+    } else if (minerInfoDupCheck.length > 0) {
+      await addMinerData(minerInfoDupCheck);
+    } else if (marketInfoDupCheck.length > 0) {
+      await addMarketData(marketInfoDupCheck);
+    } else {
+      await db.destroy();
+    }
+  } catch (err) {
+    console.error("error in scheduler file", err);
   }
   console.timeEnd("time");
   await db.destroy();
