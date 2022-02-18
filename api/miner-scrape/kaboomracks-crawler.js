@@ -20,7 +20,12 @@ const kaboomracksScraper = async () => {
       // this will filter out any posts that do not each in them
       // they sell by lots some times.
       const individualSales = minerData.match(/(?=[—]\s*).*?(?=\s*each —)/gs);
-      const moq = minerData.match(/(?=order \s*).*?(?=\s*ships)/g);
+      let moq = minerData.match(/(?=order \s*).*?(?=\s*ship)/g);
+
+      //adding this because it was messing up the regex, had to account for lot
+      if (moq === null) {
+        moq = minerData.match(/(?=each \s*).*?(?<=\s*lot)/g);
+      }
 
       //tests for moq of 1
       const moqTest = moq?.map((ele) =>
