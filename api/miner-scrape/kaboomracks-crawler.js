@@ -43,15 +43,39 @@ const kaboomracksScraper = async () => {
       ) {
         let vendor = "Kaboomracks";
         let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
-        let date = minerData
-          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
-          //removes the invalid chars
-          .replace(/[^\x20-\x7E]/g, "")
-          .split(" ")
-          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-          .join(" ");
-
-        date = moment(new Date(date)).format("MM-DD-YYYY");
+        // new way to check for date, if date is not valid it trys a different way
+        // usually there are two | which caused it to break
+        let date = moment(
+          new Date(
+            minerData
+              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+              .replace(/[^\x20-\x7E]/g, "")
+              .split(" ")
+              .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+              .join(" ")
+          )
+        ).isValid()
+          ? moment(
+              new Date(
+                minerData
+                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+                  .replace(/[^\x20-\x7E]/g, "")
+                  .split(" ")
+                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                  .join(" ")
+              )
+            ).format("MM-DD-YYYY")
+          : moment(
+              new Date(
+                minerData
+                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)[0]
+                  .replace(/[^\x20-\x7E]/g, "")
+                  .replace("| ", "")
+                  .split(" ")
+                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                  .join(" ")
+              )
+            ).format("MM-DD-YYYY");
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
@@ -82,10 +106,10 @@ const kaboomracksScraper = async () => {
               ? asicWattList[asicSearchName][th]
               : asicWattList[asicSearchName]["wt"] * Number(th);
 
-          let efficiency = watts / th;
+          //added tofixed, was getting a really long decimal place
+          let efficiency = Number((watts / th).toFixed(1));
           let model = `${asicName[0]}T`;
           let id = vendor + model + price + date;
-
           asics.push({
             vendor,
             model,
