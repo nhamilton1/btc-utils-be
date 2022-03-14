@@ -126,13 +126,14 @@ const scheduler = async () => {
       const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
       await addMinerData(firstDataInput);
       await addMarketData(allData);
-    } else if (minerInfoDupCheck.length > 0) {
-      await addMinerData(minerInfoDupCheck);
-    } else if (marketInfoDupCheck.length > 0) {
-      await addMarketData(marketInfoDupCheck);
-    } else {
-      await db.destroy();
     }
+    if (minerInfoDupCheck.length > 0) {
+      await addMinerData(minerInfoDupCheck);
+    }
+    if (marketInfoDupCheck.length > 0) {
+      await addMarketData(marketInfoDupCheck);
+    } 
+    await db.destroy();
   } catch (err) {
     console.error("error in scheduler file", err);
   }

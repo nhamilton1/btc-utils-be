@@ -36,15 +36,14 @@ const asicData = async (req, res, next) => {
       await MinerData.addMinerData(firstDataInput);
       await MarketData.addMarketData(allData);
       next();
-    } else if (minerInfoDupCheck.length > 0) {
-      await MinerData.addMinerData(minerInfoDupCheck);
-      next();
-    } else if (marketInfoDupCheck.length > 0) {
-      await MarketData.addMarketData(marketInfoDupCheck);
-      next();
-    } else {
-      next();
     }
+    if (minerInfoDupCheck.length > 0) {
+      await MinerData.addMinerData(minerInfoDupCheck);
+    }
+    if (marketInfoDupCheck.length > 0) {
+      await MarketData.addMarketData(marketInfoDupCheck);
+    } 
+    next()
   } catch (err) {
     next(err);
   }
