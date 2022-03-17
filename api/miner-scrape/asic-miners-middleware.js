@@ -1,8 +1,8 @@
-const Asics = require("./asic-miners-model");
-const MarketData = require("./market-data-model");
-const MinerData = require("./miner-data-model");
-const { kaboomracksScraper } = require("./kaboomracks-crawler");
-const { minefarmbuyScraper } = require("./minefarmbuy-crawler");
+const Asics = require("./models/asic-miners-model");
+const MarketData = require("./models/market-data-model");
+const MinerData = require("./models/miner-data-model");
+const { kaboomracksScraper } = require("./kaboomracks/kaboomracks-crawler");
+const { minefarmbuyScraper } = require("./minefarmbuy/minefarmbuy-crawler");
 // this takes up too much memory for heroku and would have to pay to use it.
 // took up mem=643M(125.7%), last test used mem=727M(141.4%)
 

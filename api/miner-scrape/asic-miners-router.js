@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Asics = require("./asic-miners-model");
+const Asics = require("./models/asic-miners-model");
 const { asicData } = require('./asic-miners-middleware')
 
 router.get("/", async (req, res, next) => {

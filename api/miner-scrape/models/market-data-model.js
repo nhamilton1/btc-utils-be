@@ -1,4 +1,4 @@
-const db = require("../data/db-config");
+const db = require("../../data/db-config");
 
 const getMarketData = async () => {
   const marketData = await db("market_data").select(

@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { sha1, convertPowerDraw, convertEfficiency } = require("./helpers");
+const { sha1, convertPowerDraw, convertEfficiency } = require("../helpers");
 const moment = require("moment");
 
 const mfbScraper = async () => {

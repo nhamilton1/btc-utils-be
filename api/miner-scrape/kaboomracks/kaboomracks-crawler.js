@@ -1,8 +1,8 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const moment = require("moment");
-const { sha1 } = require("./helpers");
-const asicWattList = require("./asicWattList");
+const { sha1 } = require("../helpers");
+const asicWattList = require("../asicWattList");
 
 const kaboomracksScraper = async () => {
   try {
