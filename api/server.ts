@@ -2,9 +2,9 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 
-const normalDistRouter = require("../api/normalDist/normalDistRouter");
 const historicPriceRouter = require("./historic-prices/historic-prices-router");
-const asicRouter = require('./miner-scrape/asic-miners-router')
+const asicRouter = require('./miner-scrape/asic-miners-router');
+const { normalDistRouter } = require("./normalDist/normalDistRouter");
 
 const server = express();
 

@@ -1,9 +1,11 @@
-require('dotenv').config()
+import { defaults } from "pg";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const pg = require('pg')
 
 if (process.env.DATABASE_URL) {
-  pg.defaults.ssl = { rejectUnauthorized: false }
+  defaults.ssl = { rejectUnauthorized: false }
 }
 
 const sharedConfig = {

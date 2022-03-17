@@ -139,3 +139,9 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+
+out/
+# TS -incremental file
+tsconfig.tsbuildinfo
+node_modules

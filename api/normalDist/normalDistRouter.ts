@@ -1,7 +1,9 @@
-const axios = require('axios')
-const express = require('express')
+import axios from 'axios'
+import moment from 'moment'
+import * as express from "express";
+import moment from 'moment';
+
 const router = express.Router()
-const moment = require('moment')
 
 router.get('/sanity_test', (req, res) => {
     res.json('sanity test')
@@ -26,4 +28,4 @@ router.get('/pool_block_counter', async (req, res, next) => {
     }
 })
 
-module.exports = router
+export {router as normalDistRouter}

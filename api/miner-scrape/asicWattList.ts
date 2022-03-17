@@ -1,5 +1,5 @@
 //wt represents watts per th
-const asicWattList = {
+export const asicWattList = {
   "Bitmain Antminer S9": {
     13.5: 1323,
   },
@@ -73,5 +73,3 @@ const asicWattList = {
     63: 3276,
   },
 };
-
-module.exports = asicWattList;
