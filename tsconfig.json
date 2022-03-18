@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Docs: https://www.typescriptlang.org/tsconfig */ "target": "ES2020",
     "module": "commonjs",
-    "outDir": "bin",
+    "outDir": "dist",
     "rootDir": "api",
     "strict": true,
     "noImplicitAny": false,
