@@ -5,6 +5,7 @@
     "outDir": "dist",
     "rootDir": "api",
     "strict": true,
+    "sourceMap": true,
     "noImplicitAny": false,
     "strictNullChecks": true,
     "checkJs": true,

@@ -1,11 +1,13 @@
 {
-  "name": "build-week-scaffolding-node",
+  "name": "asic-tools-be",
   "version": "1.0.0",
   "scripts": {
     "start": "node dist/index.js",
-    "startLocal": "ts-node-dev --respawn --pretty --transpile-only index.ts",
+    "postinstall": "tsc",
+    "watch-node": "nodemon dist/index.js",
+    "watch-ts": "tsc -w",
+    "local": "ts-node-dev --respawn --pretty --transpile-only index.ts",
     "build": "tsc -p tsconfig.json",
-    "server": "nodemon  dist/index.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
@@ -54,6 +56,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bloominstituteoftechnology/build-week-scaffolding-node.git"
+    "url": "git+https://github.com/nhamilton1/btc-utils-be"
   }
 }
