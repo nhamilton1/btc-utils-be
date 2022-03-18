@@ -8,6 +8,7 @@
     "watch-ts": "tsc -w",
     "local": "ts-node-dev --respawn --pretty --transpile-only index.ts",
     "build": "tsc -p tsconfig.json",
+    "watch": "tsc --build --verbose --incremental --watch",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
