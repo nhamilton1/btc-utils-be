@@ -132,7 +132,7 @@ const scheduler = async () => {
     }
     if (marketInfoDupCheck.length > 0) {
       await addMarketData(marketInfoDupCheck);
-    } 
+    }
     await db.destroy();
   } catch (err) {
     console.error("error in scheduler file", err);

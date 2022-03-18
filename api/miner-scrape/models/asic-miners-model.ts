@@ -1,4 +1,5 @@
-const db = require("../../data/db-config");
+import { db } from "../../data/db-config";
+
 
 export const getAll = async () => {
   const asics = await db("market_data as market")

@@ -1,4 +1,4 @@
-const db = require("../../data/db-config");
+import { db } from "../../data/db-config";
 
 const getMinerData = async () => {
   const minerData = await db("miner_data").select(

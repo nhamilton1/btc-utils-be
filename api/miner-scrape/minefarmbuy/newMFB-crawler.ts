@@ -1,12 +1,23 @@
-const puppeteer = require("puppeteer");
-const { sha1, convertPowerDraw, convertEfficiency } = require("../helpers");
-const moment = require("moment");
+import moment from "moment";
+import { launch } from "puppeteer";
+import { sha1, convertPowerDraw, convertEfficiency} from '../helpers'
+
+interface minefarmbuyDataInterface {
+  vendor: string
+  model: string
+  th: number
+  watts: number,
+  efficiency: number,
+  price: number
+  date: Date | string,
+  id: string,
+}
 
 const mfbScraper = async () => {
   const withBrowser = async (fn) => {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    const browser = await puppeteer.launch({
+    const browser = await launch({
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -70,7 +81,7 @@ const mfbScraper = async () => {
               req.continue();
             }
           });
-          let minefarmbuyData = [];
+          let minefarmbuyData: minefarmbuyDataInterface[] = [];
           await page.goto(url, { waitUntil: "domcontentloaded" });
 
           const asicModel = await page.$eval(
@@ -114,8 +125,8 @@ const mfbScraper = async () => {
             );
 
             //filters values for only ths, no batches or option value
-            const filterHashrateOptions = hashOption.filter((t) => {
-              return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+            const filterHashrateOptions = hashOption.filter((t: string) => {
+              return t.match(/th/i) && parseInt(t.charAt(0));
             });
 
             //loops through the filtered options and sets the data
@@ -139,12 +150,12 @@ const mfbScraper = async () => {
                 /\s+(\W)/g,
                 "$1"
               )} abc`;
-              const asicName =
+              const asicName: RegExpMatchArray | null =
                 asicNameFilter.match(/(?=Whatsminer\s*).*?(?=\s*abc)/gs) ||
                 asicNameFilter.match(/(?=Antminer\s*).*?(?=\s*abc)/gs) ||
                 asicNameFilter.match(/(?=Canaan\s*).*?(?=\s*abc)/gs);
 
-              const model = `${asicName[0]} ${Number(th.split(/th/i)[0])}T`;
+              const model = `${asicName![0]} ${Number(th.split(/th/i)[0])}T`;
 
               //creating a unique id so later i can use it to check already found miners
               let id = `minefarmbuy ${model} ${
@@ -185,7 +196,7 @@ const mfbScraper = async () => {
               );
 
               const efficiencyHashrateOpt = hashrateOptionForEff.filter((t) => {
-                return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+                return t.match(/th/i) && parseInt(t.charAt(0));
               });
 
               for (const th of efficiencyHashrateOpt.values()) {

@@ -1,15 +1,23 @@
-const Dates = require("./historic-prices-model");
-const moment = require("moment");
-const { scrape } = require("./crawler");
+import moment from "moment";
+import { scrape } from "./crawler";
+import { add, getLastRow } from "./historic-prices-model";
 
-const scrapeDates = async (req, res, next) => {
+interface scrapingUpdatesInterface {
+    date: string;
+    btc_price: number;
+    spy_price: number | null;
+    gld_price: number | null;
+}
+
+export const scrapeDates = async (_req, _res, next): Promise<void> => {
   try {
-    const dateCheck = await Dates.getLastRow();
+    const dateCheck = await getLastRow();
     let mostRecentDate = dateCheck[dateCheck.length - 1].date;
     let currDate = moment(new Date()).format("YYYY-MM-DD");
     if (mostRecentDate !== currDate) {
       const scrapingForUpdates = await scrape(mostRecentDate);
-      await Dates.add(scrapingForUpdates);
+      if(!scrapingForUpdates) return next()
+      await add(scrapingForUpdates);
       next();
     } else {
       next();
@@ -17,8 +25,4 @@ const scrapeDates = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-module.exports = {
-  scrapeDates,
 };
