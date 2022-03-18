@@ -1,10 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { asicRouter } from "./miner-scrape/asic-miners-router";
+import { normalDistRouter } from "./normalDist/normalDistRouter";
 
 const historicPriceRouter = require("./historic-prices/historic-prices-router");
-const asicRouter = require("./miner-scrape/asic-miners-router");
-const { normalDistRouter } = require("./normalDist/normalDistRouter");
 
 const server = express();
 

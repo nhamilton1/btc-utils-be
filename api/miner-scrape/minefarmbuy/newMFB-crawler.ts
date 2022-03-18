@@ -1,16 +1,16 @@
 import moment from "moment";
 import { launch } from "puppeteer";
-import { sha1, convertPowerDraw, convertEfficiency} from '../helpers'
+import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
 
 interface minefarmbuyDataInterface {
-  vendor: string
-  model: string
-  th: number
-  watts: number,
-  efficiency: number,
-  price: number
-  date: Date | string,
-  id: string,
+  vendor: string;
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
+  price: number;
+  date: Date | string;
+  id: string;
 }
 
 const mfbScraper = async () => {

@@ -18,13 +18,13 @@ interface gldDataInterace {
 }
 
 interface formattedSpyInterface {
-  spy_date: string, 
-  spy_price: null | number
+  spy_date: string;
+  spy_price: null | number;
 }
 
 interface formattedGldInterface {
-  gld_date: string, 
-  gld_price: null | number
+  gld_date: string;
+  gld_price: null | number;
 }
 
 export const scrape = async (mostRecentDate: string | number | Date) => {
@@ -134,8 +134,12 @@ export const scrape = async (mostRecentDate: string | number | Date) => {
     );
 
     // sorts order by date
-    formattedSpy.sort((a, b) => ( new Date(b.spy_date) as any) - (new Date(a.spy_date) as any));
-    formattedGld.sort((a, b) => (new Date(b.gld_date) as any ) - (new Date(a.gld_date) as any));
+    formattedSpy.sort(
+      (a, b) => (new Date(b.spy_date) as any) - (new Date(a.spy_date) as any)
+    );
+    formattedGld.sort(
+      (a, b) => (new Date(b.gld_date) as any) - (new Date(a.gld_date) as any)
+    );
 
     //formats data found to obj
     const data = btcData.map((date, idx) => {

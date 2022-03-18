@@ -1,10 +1,13 @@
-const router = require("express").Router();
-const Asics = require("./models/asic-miners-model");
-const { asicData } = require('./asic-miners-middleware')
+import asicData from "./asic-miners-middleware";
+import { getAll } from "./models/asic-miners-model";
+import * as express from "express";
+
+const router = express.Router();
+
 
 router.get("/", async (req, res, next) => {
   try {
-    const asicMiners = await Asics.getAll();
+    const asicMiners = await getAll();
     res.json(asicMiners);
   } catch (err) {
     next(err);
@@ -13,11 +16,11 @@ router.get("/", async (req, res, next) => {
 
 router.get("/asics-scheduler", asicData, async (req, res, next) => {
   try {
-    const asicMiners = await Asics.getAll();
+    const asicMiners = await getAll();
     res.json(asicMiners);
   } catch (err) {
     next(err);
   }
 });
 
-module.exports = router;
+export {router as asicRouter}

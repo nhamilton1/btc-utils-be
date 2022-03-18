@@ -1,5 +1,7 @@
-exports.up = async (knex) => {
-  await knex.schema.createTable("miner_data", (table) => {
+import { Knex } from "knex";
+
+export const up = async (knex: Knex): Promise<any> => {
+  return knex.schema.createTable("miner_data", (table) => {
     table.string("model");
     table.float("th");
     table.float("watts");
@@ -7,6 +9,6 @@ exports.up = async (knex) => {
   });
 };
 
-exports.down = async (knex) => {
-  await knex.schema.dropTableIfExists("miner_data");
+export const down = async (knex: Knex): Promise<any> => {
+  return knex.schema.dropTableIfExists("miner_data");
 };

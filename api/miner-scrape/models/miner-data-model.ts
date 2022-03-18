@@ -1,6 +1,6 @@
 import { db } from "../../data/db-config";
 
-const getMinerData = async () => {
+export const getMinerData = async () => {
   const minerData = await db("miner_data").select(
     "model",
     "th",
@@ -10,7 +10,7 @@ const getMinerData = async () => {
   return minerData
 };
 
-const addMinerData = async (item) => {
+export const addMinerData = async (item) => {
   const minerData = item.map((x) => ({
     model: x.model,
     th: x.th,
@@ -24,9 +24,4 @@ const addMinerData = async (item) => {
     "efficiency",
   ]);
   return newItemObject;
-};
-
-module.exports = {
-  getMinerData,
-  addMinerData,
 };
