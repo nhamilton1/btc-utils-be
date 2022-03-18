@@ -1,5 +1,5 @@
 import moment from "moment";
-import { launch } from "puppeteer";
+import  Puppeteer from "puppeteer";
 import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
 
 interface minefarmbuyDataInterface {
@@ -18,7 +18,7 @@ const minefarmbuyScraper = async () => {
   try {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    browser = await launch({
+    browser = await Puppeteer.launch({
       slowMo: 5,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });

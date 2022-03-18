@@ -3,8 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import { asicRouter } from "./miner-scrape/asic-miners-router";
 import { normalDistRouter } from "./normalDist/normalDistRouter";
+import { historicPriceRouter } from "./historic-prices/historic-prices-router";
 
-const historicPriceRouter = require("./historic-prices/historic-prices-router");
 
 const server = express();
 

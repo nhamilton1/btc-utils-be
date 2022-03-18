@@ -4,7 +4,7 @@ import { sha1 } from "../helpers";
 import { asicWattList } from "../asicWattList";
 import { load } from "cheerio";
 
-interface asicInterface {
+export interface kaboomracksInterface {
   vendor: string;
   model: string;
   th: number;
@@ -21,7 +21,7 @@ const kaboomracksScraper = async () => {
 
     const $miner = load(data);
 
-    const asics: asicInterface[] = [];
+    const asics: kaboomracksInterface[] = [];
 
     $miner(
       "body > main > div > section > div > div > div > div.tgme_widget_message_text"
