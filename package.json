@@ -2,9 +2,10 @@
   "name": "build-week-scaffolding-node",
   "version": "1.0.0",
   "scripts": {
-    "start": "ts-node-dev --respawn --pretty --transpile-only index.ts",
+    "start": "node dist/index.js",
+    "startLocal": "ts-node-dev --respawn --pretty --transpile-only index.ts",
     "build": "tsc -p tsconfig.json",
-    "server": "nodemon index.js",
+    "server": "nodemon  dist/index.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
