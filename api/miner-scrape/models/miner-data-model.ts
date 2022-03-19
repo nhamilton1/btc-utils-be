@@ -10,17 +10,20 @@ export const getMinerData = async () => {
   return minerData;
 };
 
-export const addMinerData = async (
-  item: { model: string; th: number; watts: number; efficiency: number }[]
-) => {
-  const minerData = item!.map(
-    (x: { model: string; th: number; watts: number; efficiency: number }) => ({
-      model: x.model,
-      th: x.th,
-      watts: x.watts,
-      efficiency: x.efficiency,
-    })
-  );
+type minerDataType = {
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
+};
+
+export const addMinerData = async (item: minerDataType[]) => {
+  const minerData = item!.map((x: minerDataType) => ({
+    model: x.model,
+    th: x.th,
+    watts: x.watts,
+    efficiency: x.efficiency,
+  }));
   const [newItemObject] = await db("miner_data").insert(minerData, [
     "model",
     "th",
