@@ -1,6 +1,6 @@
 import { knex } from 'knex';
-const configs = require('../../knexfile')
+import {knexConfig} from '../knexfile'
 
 const env:string = process.env.NODE_ENV as string
 
-export const db = knex(configs[env])
+export const db = knex(knexConfig[env])

@@ -12,7 +12,11 @@ const sharedConfig = {
   seeds: { directory: './api/data/seeds' },
 }
 
-module.exports = {
+interface KnexConfig {
+  [key: string]: object;
+};
+
+export const knexConfig: KnexConfig = {
   development: {
     ...sharedConfig,
     connection: process.env.DEV_DATABASE_URL,
