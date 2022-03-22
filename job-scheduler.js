@@ -1,10 +1,10 @@
 require("dotenv").config();
 const {
   kaboomracksScraper,
-} = require("./api/miner-scrape/kaboomracks-crawler");
+} = require("./api/miner-scrape/kaboomracks/kaboomracks-crawler");
 const {
   minefarmbuyScraper,
-} = require("./api/miner-scrape/minefarmbuy-crawler");
+} = require("./api/miner-scrape/minefarmbuy/minefarmbuy-crawler");
 const knex = require("knex");
 const pg = require("pg");
 
