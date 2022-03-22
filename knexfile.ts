@@ -1,6 +1,6 @@
 import { defaults } from "pg";
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "./.env" });
 
 if (process.env.DATABASE_URL) {
   defaults.ssl = { rejectUnauthorized: false }
@@ -12,11 +12,7 @@ const sharedConfig = {
   seeds: { directory: './api/data/seeds' },
 }
 
-interface KnexConfig {
-  [key: string]: object;
-};
-
-export const knexConfig: KnexConfig = {
+module.exports =  {
   development: {
     ...sharedConfig,
     connection: process.env.DEV_DATABASE_URL,

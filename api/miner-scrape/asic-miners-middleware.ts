@@ -36,12 +36,12 @@ const asicData = async (req: Request, res: Response, next: NextFunction) => {
           )
       );
       const firstDataInput = minerInfoFirstDupCheck?.concat(scrapeForKaboomData!);
-      await addMinerData(firstDataInput);
+      await addMinerData(firstDataInput!);
       await addMarketData(allData);
       next();
     }
     if (minerInfoDupCheck!.length > 0) {
-      await addMinerData(minerInfoDupCheck);
+      await addMinerData(minerInfoDupCheck!);
     }
     if (marketInfoDupCheck!.length > 0) {
       await addMarketData(marketInfoDupCheck);

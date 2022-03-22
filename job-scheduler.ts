@@ -1,8 +1,8 @@
 import { knex } from "knex";
 import { defaults } from "pg";
 import * as dotenv from "dotenv";
-import minefarmbuyScraper from "./miner-scrape/minefarmbuy/minefarmbuy-crawler";
-import kaboomracksScraper from "./miner-scrape/kaboomracks/kaboomracks-crawler";
+import minefarmbuyScraper from "./api/miner-scrape/minefarmbuy/minefarmbuy-crawler";
+import kaboomracksScraper from "./api/miner-scrape/kaboomracks/kaboomracks-crawler";
 
 dotenv.config();
 

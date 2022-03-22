@@ -3,7 +3,6 @@
     /* Docs: https://www.typescriptlang.org/tsconfig */ "target": "ES2020",
     "module": "commonjs",
     "outDir": "dist",
-    "rootDir": "api",
     "strict": true,
     "sourceMap": true,
     "noImplicitAny": false,
@@ -20,6 +19,6 @@
     "useUnknownInCatchVariables": false,
     "resolveJsonModule": true
   },
-  "include": ["api/**/*.ts", "api/**/*.js"],
+  "include": ["api/**/*.ts", "api/**/*.js", "index.ts", "job-scheduler.ts", "knexfile.ts"],
   "exclude": ["node_modules", "<node_internals>/**", "test", "bin", "out"]
 }
