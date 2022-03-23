@@ -20,9 +20,9 @@
     "deploy": "git push heroku main"
   },
   "engines": {
-    "node": "16.13.1"
+    "node": "16.8.0"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.24.0",
     "cheerio": "^1.0.0-rc.10",

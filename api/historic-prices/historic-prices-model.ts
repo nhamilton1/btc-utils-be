@@ -55,13 +55,9 @@ export const add = async (item: any[]) => {
 };
 
 export const getLastRow = async () => {
-  return await db("historical_prices as hp")
-    .select(
-      "hp.date",
-      "hp.btc_price",
-      "hp.spy_price",
-      "hp.gld_price",
-    )
-    .orderBy("hp.date", "DESC")
+  const getLastRow = await db("historical_prices")
+    .select("date", "btc_price", "spy_price", "gld_price")
+    .orderBy("date", "DESC")
     .limit(1);
+  return getLastRow;
 };
