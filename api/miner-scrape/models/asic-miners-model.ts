@@ -1,6 +1,7 @@
-const db = require("../../data/db-config");
+import { db } from "../../data/db-config";
 
-const getAll = async () => {
+
+export const getAll = async () => {
   const asics = await db("market_data as market")
     .join("miner_data as miner", "miner.model", "market.model")
     .select(
@@ -15,7 +16,7 @@ const getAll = async () => {
   return asics;
 };
 
-const getAllIds = async () => {
+export const getAllIds = async () => {
   const asics = await db("market_data as market")
     .join("miner_data as miner", "miner.model", "market.model")
     .select(
@@ -29,9 +30,4 @@ const getAllIds = async () => {
       'miner.efficiency'
     );
   return asics;
-};
-
-module.exports = {
-  getAll,
-  getAllIds,
 };

@@ -1,16 +1,27 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const moment = require("moment");
-const { sha1 } = require("../helpers");
-const asicWattList = require("../asicWattList");
+import axios from "axios";
+import moment from "moment";
+import { sha1 } from "../helpers";
+import { asicWattList } from "../asicWattList";
+import { load } from "cheerio";
+
+export interface kaboomracksInterface {
+  vendor: string;
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
+  price: number;
+  date: Date | string;
+  id: string;
+}
 
 const kaboomracksScraper = async () => {
   try {
     const { data } = await axios.get("https://t.me/s/kaboomracks");
 
-    const $miner = cheerio.load(data);
+    const $miner = load(data);
 
-    const asics = [];
+    const asics: kaboomracksInterface[] = [];
 
     $miner(
       "body > main > div > section > div > div > div > div.tgme_widget_message_text"
@@ -28,27 +39,33 @@ const kaboomracksScraper = async () => {
       }
 
       //tests for moq of 1
-      const moqTest = moq?.map((ele) =>
+
+      //TODO: TEST OUT THIS MOQ
+      const moqTest = moq?.map((ele): (number | null)[] =>
         ele
           .split(" ")
-          .map((n) => (!isNaN(n) ? Number(n) : null))
-          .filter((i) => i)
+          .map((n: string): number | null =>
+            typeof n === "string" && !Number.isNaN(Number(n)) ? Number(n) : null
+          )
+          .filter((i): number | null => i)
       )[0];
 
       if (
         //might have to change this so it includes T versions
         minerData.includes("Antminer S") &&
         individualSales != null &&
-        moqTest[0] === 1
+        moqTest![0] === 1
       ) {
         let vendor = "Kaboomracks";
-        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let price = Number(
+          minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
+        );
         // new way to check for date, if date is not valid it trys a different way
         // usually there are two | which caused it to break
         let date = moment(
           new Date(
             minerData
-              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
               .replace(/[^\x20-\x7E]/g, "")
               .split(" ")
               .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
@@ -58,7 +75,7 @@ const kaboomracksScraper = async () => {
           ? moment(
               new Date(
                 minerData
-                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
                   .replace(/[^\x20-\x7E]/g, "")
                   .split(" ")
                   .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
@@ -68,7 +85,7 @@ const kaboomracksScraper = async () => {
           : moment(
               new Date(
                 minerData
-                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)[0]
+                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
                   .replace(/[^\x20-\x7E]/g, "")
                   .replace("| ", "")
                   .split(" ")
@@ -79,10 +96,10 @@ const kaboomracksScraper = async () => {
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
-        let asicModel = minerData.match(/(?=Antminer S\s*).*?(?=\s*for)/gs)[0];
+        let asicModel = minerData.match(/(?=Antminer S\s*).*?(?=\s*for)/gs)![0];
         //gets the asic name without the th
         let asicSearchName = minerData
-          .match(/(?=Bitmain Antminer S\s*).*?(?=\s*T)/gs)[0]
+          .match(/(?=Bitmain Antminer S\s*).*?(?=\s*T)/gs)![0]
           .split(" ")
           .slice(0, -1)
           .join(" ");
@@ -108,7 +125,7 @@ const kaboomracksScraper = async () => {
 
           //added tofixed, was getting a really long decimal place
           let efficiency = Number((watts / th).toFixed(1));
-          let model = `${asicName[0]}T`;
+          let model = `${asicName![0]}T`;
           let id = vendor + model + price + date;
           asics.push({
             vendor,
@@ -125,7 +142,7 @@ const kaboomracksScraper = async () => {
           //and had to fix how the date was pulled. Still might have to add another
           //statement for when just Th/s is used
           let date = minerData
-            .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)[0]
+            .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)![0]
             //removes the invalid chars
             .replace(/[^\x20-\x7E]/g, "")
             .split(" ")
@@ -140,7 +157,7 @@ const kaboomracksScraper = async () => {
               .replace("(", "")
           );
           const asicName = asicModel
-            .match(/(?=Antminer S\s*).*?(?=\s*T)/gs)[0]
+            .match(/(?=Antminer S\s*).*?(?=\s*T)/gs)![0]
             .replace("(", "");
 
           let watts =
@@ -168,12 +185,14 @@ const kaboomracksScraper = async () => {
       if (
         minerData.includes("Whatsminer M") &&
         individualSales != null &&
-        moqTest[0] === 1
+        moqTest![0] === 1
       ) {
         let vendor = "Kaboomracks";
-        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let price = Number(
+          minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
+        );
         let date = minerData
-          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
           .replace(/[^\x20-\x7E]/g, "")
           .split(" ")
           .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
@@ -183,9 +202,9 @@ const kaboomracksScraper = async () => {
 
         let asicModel = minerData.match(
           /(?=Whatsminer M\s*).*?(?=\s*for)/gs
-        )[0];
+        )![0];
         let asicSearchName = minerData
-          .match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs)[0]
+          .match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs)![0]
           .split(" ")
           .slice(0, -1)
           .join(" ");
@@ -207,7 +226,7 @@ const kaboomracksScraper = async () => {
             : asicWattList[asicSearchName]["wt"] * Number(th);
 
         let efficiency = watts / th;
-        let model = `${asicName[0]}T`;
+        let model = `${asicName![0]}T`;
         let id = vendor + model + price + date;
 
         asics.push({
@@ -225,14 +244,16 @@ const kaboomracksScraper = async () => {
       if (
         minerData.includes("Canaan A") &&
         individualSales != null &&
-        moqTest[0] === 1
+        moqTest![0] === 1
       ) {
         let vendor = "Kaboomracks";
-        let price = Number(minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)[0]);
+        let price = Number(
+          minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
+        );
         let date = moment(
           new Date(
             minerData
-              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
               .replace(/[^\x20-\x7E]/g, "")
               .split(" ")
               .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
@@ -242,7 +263,7 @@ const kaboomracksScraper = async () => {
           ? moment(
               new Date(
                 minerData
-                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)[0]
+                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
                   .replace(/[^\x20-\x7E]/g, "")
                   .split(" ")
                   .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
@@ -252,7 +273,7 @@ const kaboomracksScraper = async () => {
           : moment(
               new Date(
                 minerData
-                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)[0]
+                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
                   .replace(/[^\x20-\x7E]/g, "")
                   .replace("| ", "")
                   .split(" ")
@@ -261,9 +282,9 @@ const kaboomracksScraper = async () => {
               )
             ).format("MM-DD-YYYY");
 
-        let asicModel = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
+        let asicModel = minerData?.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)![0];
         let asicSearchName = minerData
-          .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)[0]
+          .match(/(?=Canaan A\s*).*?(?=\s*T)/gs)![0]
           .split(" ")
           .slice(0, -1)
           .join(" ");
@@ -278,7 +299,7 @@ const kaboomracksScraper = async () => {
               .replace("T", "")
           );
 
-          const asicName = asicModel.match(/(?=Canaan A\s*).*?(?=\s*T)/gs);
+          const asicName = asicModel?.match(/(?=Canaan A\s*).*?(?=\s*T)/gs);
 
           let watts =
             asicWattList[asicSearchName][th] !== undefined
@@ -286,7 +307,7 @@ const kaboomracksScraper = async () => {
               : asicWattList[asicSearchName]["wt"] * Number(th);
 
           let efficiency = watts / th;
-          let model = `${asicName[0]}T`;
+          let model = `${asicName![0]}T`;
           let id = vendor + model + price + date;
 
           asics.push({
@@ -301,9 +322,11 @@ const kaboomracksScraper = async () => {
           });
         } else if (!asicModel.includes("T")) {
           let th = Number(
-            minerData.match(/(?=[ㄴ]\s*).*?(?=\s*Th\/s)/gs)[0].split(" ")[1]
+            minerData?.match(/(?=[ㄴ]\s*).*?(?=\s*Th\/s)/gs)![0]?.split(" ")[1]
           );
-          const asicName = minerData.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)[0];
+          const asicName = minerData?.match(
+            /(?=Canaan A\s*).*?(?=\s*for)/gs
+          )![0];
 
           let watts =
             asicWattList[asicName][th] !== undefined
@@ -337,6 +360,4 @@ const kaboomracksScraper = async () => {
   }
 };
 
-module.exports = {
-  kaboomracksScraper,
-};
+export default kaboomracksScraper;

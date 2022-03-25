@@ -1,8 +1,33 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const moment = require("moment");
+import axios from "axios";
+import { load } from "cheerio";
+import moment from "moment";
 
-const scrape = async (mostRecentDate) => {
+interface btcDataInterface {
+  btc_date: string;
+  btc_price: number;
+}
+
+interface spyDataInterace {
+  spy_date: string;
+  spy_price: number;
+}
+
+interface gldDataInterace {
+  gld_date: string;
+  gld_price: number;
+}
+
+interface formattedSpyInterface {
+  spy_date: string;
+  spy_price: null | number;
+}
+
+interface formattedGldInterface {
+  gld_date: string;
+  gld_price: null | number;
+}
+
+export const scrape = async (mostRecentDate: string | number | Date) => {
   try {
     mostRecentDate = moment(mostRecentDate).format("MMM DD YYYY");
 
@@ -16,18 +41,18 @@ const scrape = async (mostRecentDate) => {
       "https://finance.yahoo.com/quote/GLD/history/"
     );
 
-    const $btc = cheerio.load(dataBtc);
-    const $spy = cheerio.load(dataSpy);
-    const $gld = cheerio.load(dataGld);
+    const $btc = load(dataBtc);
+    const $spy = load(dataSpy);
+    const $gld = load(dataGld);
 
-    let btcData = [];
-    let spyData = [];
-    let gldData = [];
+    let btcData: btcDataInterface[] = [];
+    let spyData: spyDataInterace[] = [];
+    let gldData: gldDataInterace[] = [];
 
     //$ is scraping the web page
     $btc(
       "#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr> td:nth-child(1)"
-    ).each((_idx, el) => {
+    ).each((_idx: any, el: any) => {
       let btcDate = $btc(el).text();
       let btcPrice = $btc(el).next().next().next().next().next().text();
 
@@ -45,8 +70,8 @@ const scrape = async (mostRecentDate) => {
     $spy(
       "#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)"
     ).each((_idx, el) => {
-      let dateChecker = [];
-      let spyDate = $spy(el).text();
+      let dateChecker: string[] = [];
+      let spyDate: string = $spy(el).text();
       let spyPrice = $spy(el).next().next().next().next().next().text();
 
       //checks for the dividend dupe date
@@ -83,8 +108,8 @@ const scrape = async (mostRecentDate) => {
       }
     });
 
-    let formattedSpy = [];
-    let formattedGld = [];
+    let formattedSpy: formattedSpyInterface[] = [];
+    let formattedGld: formattedGldInterface[] = [];
 
     //sets the missing dates, weekends/holidays, to null
     btcData.map((x) =>
@@ -109,8 +134,12 @@ const scrape = async (mostRecentDate) => {
     );
 
     // sorts order by date
-    formattedSpy.sort((a, b) => new Date(b.spy_date) - new Date(a.spy_date));
-    formattedGld.sort((a, b) => new Date(b.gld_date) - new Date(a.gld_date));
+    formattedSpy.sort(
+      (a, b) => (new Date(b.spy_date) as any) - (new Date(a.spy_date) as any)
+    );
+    formattedGld.sort(
+      (a, b) => (new Date(b.gld_date) as any) - (new Date(a.gld_date) as any)
+    );
 
     //formats data found to obj
     const data = btcData.map((date, idx) => {
@@ -123,14 +152,10 @@ const scrape = async (mostRecentDate) => {
     });
 
     //sorts data by date
-    data.sort((a, b) => new Date(a.date) - new Date(b.date));
+    data.sort((a, b) => (new Date(a.date) as any) - (new Date(b.date) as any));
 
     return data;
   } catch (err) {
     console.error(err);
   }
-};
-
-module.exports = {
-  scrape,
 };

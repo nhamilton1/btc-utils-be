@@ -1,17 +1,24 @@
-const db = require("../../data/db-config");
+import { db } from "../../data/db-config";
 
-const getMinerData = async () => {
+export const getMinerData = async () => {
   const minerData = await db("miner_data").select(
     "model",
     "th",
     "watts",
-    "efficiency",
+    "efficiency"
   );
-  return minerData
+  return minerData;
 };
 
-const addMinerData = async (item) => {
-  const minerData = item.map((x) => ({
+type minerDataType = {
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
+};
+
+export const addMinerData = async (item: minerDataType[]) => {
+  const minerData = item!.map((x: minerDataType) => ({
     model: x.model,
     th: x.th,
     watts: x.watts,
@@ -24,9 +31,4 @@ const addMinerData = async (item) => {
     "efficiency",
   ]);
   return newItemObject;
-};
-
-module.exports = {
-  getMinerData,
-  addMinerData,
 };

@@ -1,9 +1,14 @@
 {
-  "name": "build-week-scaffolding-node",
+  "name": "asic-tools-be",
   "version": "1.0.0",
   "scripts": {
-    "start": "node index.js",
-    "server": "nodemon index.js",
+    "start": "node dist/index.js",
+    "postinstall": "tsc",
+    "watch-node": "nodemon dist/index.js",
+    "watch-ts": "tsc -w",
+    "local": "ts-node-dev --respawn --pretty --transpile-only index.ts",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc --build --verbose --incremental --watch",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
@@ -15,9 +20,9 @@
     "deploy": "git push heroku main"
   },
   "engines": {
-    "node": "16.13.1"
+    "node": "16.8.0"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.24.0",
     "cheerio": "^1.0.0-rc.10",
@@ -32,15 +37,26 @@
     "puppeteer": "^13.1.2"
   },
   "devDependencies": {
+    "@types/cors": "2.8.5",
+    "@types/eslint": "8.4.1",
+    "@types/express": "^4.17.13",
     "@types/jest": "27.0.3",
+    "@types/node": "^17.0.21",
+    "@types/nodemon": "1.19.1",
+    "@types/pg": "8.6.5",
+    "@types/supertest": "2.0.11",
+    "@typescript-eslint/parser": "^5.15.0",
     "cross-env": "7.0.3",
     "eslint": "8.4.1",
     "jest": "27.4.4",
     "nodemon": "2.0.15",
-    "supertest": "6.1.6"
+    "supertest": "6.1.6",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.2"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bloominstituteoftechnology/build-week-scaffolding-node.git"
+    "url": "git+https://github.com/nhamilton1/btc-utils-be"
   }
 }

@@ -1,2 +1,2 @@
-web: npm start
-worker: node job-scheduler.js
+web: node dist/index.js
+worker: node dist/job-scheduler.js 

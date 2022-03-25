@@ -1,17 +1,32 @@
-require("dotenv").config();
-const knex = require("knex");
-const pg = require("pg");
+import { knex } from "knex";
+import { defaults } from "pg";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 if (process.env.DATABASE_URL) {
-  pg.defaults.ssl = { rejectUnauthorized: false };
+  defaults.ssl = { rejectUnauthorized: false };
 }
 
-const dbConfig = {
+interface dbConfigInterface {
+  client: string;
+  connection: {
+    database?: string;
+    host?: string;
+    port?: number;
+    user?: string;
+    password?: string;
+    sslmode: string;
+  };
+  searchPath: string[];
+}
+
+const dbConfig: dbConfigInterface = {
   client: "pg",
   connection: {
     database: process.env.DBNAME,
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    port: parseInt(<string>process.env.DB_PORT, 10) || 5432,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     sslmode: "require",

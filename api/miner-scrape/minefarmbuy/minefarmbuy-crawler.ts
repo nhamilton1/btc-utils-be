@@ -1,20 +1,31 @@
-const puppeteer = require("puppeteer");
-const { sha1, convertPowerDraw, convertEfficiency } = require("../helpers");
-const moment = require("moment");
+import moment from "moment";
+import  Puppeteer from "puppeteer";
+import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
+
+interface minefarmbuyDataInterface {
+  vendor: string;
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
+  price: number;
+  date: Date | string;
+  id: string;
+}
 
 const minefarmbuyScraper = async () => {
   let browser;
   try {
     // adding slowMo: 5 fixes the bug where asics with just the hashrate
     // option would push hashrates that were not there
-    browser = await puppeteer.launch({
+    browser = await Puppeteer.launch({
       slowMo: 5,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
     await page.setRequestInterception(true);
-    page.on("request", (req) => {
+    page.on("request", (req): void => {
       if (
         req.resourceType() == "stylesheet" ||
         req.resourceType() == "font" ||
@@ -32,11 +43,11 @@ const minefarmbuyScraper = async () => {
     //gets all the urls on the btc asic product list page
     const urls = await page.$$eval(
       "#blog > div > div > div > div > article > div > ul > li > a ",
-      (title) => title.map((url) => url.href)
+      (title): string => title.map((url): string => url.href)
     );
 
     //filters out anything that are not asics
-    const filteredUrls = urls.filter((word) => {
+    const filteredUrls = urls.filter((word): string => {
       return (
         word.includes("whatsminer-m") ||
         word.includes("antminer-s") ||
@@ -47,7 +58,7 @@ const minefarmbuyScraper = async () => {
     //removes dups from the url array
     const uniqUrls = [...new Set(filteredUrls)];
 
-    const minefarmbuyData = [];
+    const minefarmbuyData: minefarmbuyDataInterface[] = [];
 
     // loops through all of the filtered links
     for (const url of uniqUrls.values()) {
@@ -55,27 +66,27 @@ const minefarmbuyScraper = async () => {
 
       const asicModel = await page.$eval(
         "div > div.summary.entry-summary > h1",
-        (el) => el.innerText
+        (el: { innerText: string; }): string => el.innerText
       );
 
       //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
-      const incoterms = await page.$$eval("#incoterms > option", (node) =>
-        node.map((th) => th.innerText)
+      const incoterms = await page.$$eval("#incoterms > option", (node: { innerText: string; }[]) =>
+        node.map((th: { innerText: string; }) => th.innerText)
       );
 
       //checks for efficiency dropdown when page first loads
-      const effici = await page.$$eval("#efficiency > option", (node) =>
-        node.map((th) => th.innerText)
+      const effici = await page.$$eval("#efficiency > option", (node: { innerText: string; }[]) =>
+        node.map((th: { innerText: string; }) => th.innerText)
       );
 
-      const filteredEfficiency = effici.filter((t) => t.match(/J\/th/i));
+      const filteredEfficiency = effici.filter((t: string) => t.match(/J\/th/i));
 
       //$$evail on most because if it was undefined, it would crash
       //could move this down to the if statement and make it $eval
       //have to remember to remove the [0]
       const ifNoPriceFromAsicPrice = await page.$$eval(
         "div > div.summary.entry-summary > p > span > bdi",
-        (el) => el.map((e) => e.innerText)
+        (el: { innerText: string; }[]) => el.map((e: { innerText: string; }) => e.innerText)
       );
 
       //checks for OoS
@@ -83,19 +94,19 @@ const minefarmbuyScraper = async () => {
       // eslint-disable-next-line no-unused-vars
       const oos = await page.$$eval(
         "div > div.summary.entry-summary > form > p",
-        (el) => el.map((e) => e.innerText)
+        (el: { innerText: string; }[]) => el.map((e: { innerText: string; }) => e.innerText)
       );
 
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
         //checks for hashrate dropdown when page first loads
-        const hashOption = await page.$$eval("#hashrate > option", (node) =>
-          node.map((th) => th.innerText)
+        const hashOption = await page.$$eval("#hashrate > option", (node: { innerText: string; }[]) =>
+          node.map((th: { innerText: string; }) => th.innerText)
         );
 
         //filters values for only ths, no batches or option value
-        const filterHashrateOptions = hashOption.filter((t) => {
-          return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+        const filterHashrateOptions = hashOption.filter((t: string) => {
+          return t.match(/th/i) && parseInt(t.charAt(0));
         });
 
         //loops through the filtered options and sets the data
@@ -104,24 +115,24 @@ const minefarmbuyScraper = async () => {
 
           const asicPrice = await page.$$eval(
             "div > div > form > div > div > div > span > span > bdi",
-            (node) => node.map((price) => price.innerText)
+            (node: { innerText: string; }[]) => node.map((price: { innerText: string; }) => price.innerText)
           );
 
           const powerDraw = await page.$eval(
             "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
-            (el) => el.innerText
+            (el: { innerText: string; }) => el.innerText
           );
 
           // having this filter so the regex knows where to stop
           // the replace removes the first space if they leave a space
           // between the ++ like in M30s ++ should be M30s++
           const asicNameFilter = `${asicModel.replace(/\s+(\W)/g, "$1")} abc`;
-          const asicName =
+          const asicName: RegExpMatchArray | null =
             asicNameFilter.match(/(?=Whatsminer\s*).*?(?=\s*abc)/gs) ||
             asicNameFilter.match(/(?=Antminer\s*).*?(?=\s*abc)/gs) ||
             asicNameFilter.match(/(?=Canaan\s*).*?(?=\s*abc)/gs);
 
-          const model = `${asicName[0]} ${Number(th.split(/th/i)[0])}T`;
+          const model = `${asicName![0]} ${Number(th.split(/th/i)[0])}T`;
 
           //creating a unique id so later i can use it to check already found miners
           let id = `minefarmbuy ${model} ${
@@ -158,7 +169,7 @@ const minefarmbuyScraper = async () => {
           );
 
           const efficiencyHashrateOpt = hashrateOptionForEff.filter((t) => {
-            return t.match(/th/i) && parseInt(Number(t.charAt(0)));
+            return t.match(/th/i) && parseInt(t.charAt(0));
           });
 
           for (const th of efficiencyHashrateOpt.values()) {
@@ -212,6 +223,4 @@ const minefarmbuyScraper = async () => {
   }
 };
 
-module.exports = {
-  minefarmbuyScraper,
-};
+export default minefarmbuyScraper

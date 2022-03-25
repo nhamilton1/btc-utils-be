@@ -1,6 +1,6 @@
-const db = require("../../data/db-config");
+import { db } from "../../data/db-config";
 
-const getMarketData = async () => {
+export const getMarketData = async () => {
   const marketData = await db("market_data").select(
     "id",
     "vendor",
@@ -11,7 +11,7 @@ const getMarketData = async () => {
   return marketData;
 };
 
-const addMarketData = async (item) => {
+export const addMarketData = async (item) => {
   const marketData = item.map((x) => ({
     id: x.id,
     vendor: x.vendor,
@@ -27,9 +27,4 @@ const addMarketData = async (item) => {
     "date",
   ]);
   return newItemObject;
-};
-
-module.exports = {
-  getMarketData,
-  addMarketData,
 };

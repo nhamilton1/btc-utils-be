@@ -1,23 +1,34 @@
-require("dotenv").config();
-const {
-  kaboomracksScraper,
-} = require("./api/miner-scrape/kaboomracks/kaboomracks-crawler");
-const {
-  minefarmbuyScraper,
-} = require("./api/miner-scrape/minefarmbuy/minefarmbuy-crawler");
-const knex = require("knex");
-const pg = require("pg");
+import { knex } from "knex";
+import { defaults } from "pg";
+import * as dotenv from "dotenv";
+import minefarmbuyScraper from "./api/miner-scrape/minefarmbuy/minefarmbuy-crawler";
+import kaboomracksScraper from "./api/miner-scrape/kaboomracks/kaboomracks-crawler";
+
+dotenv.config();
 
 if (process.env.DATABASE_URL) {
-  pg.defaults.ssl = { rejectUnauthorized: false };
+  defaults.ssl = { rejectUnauthorized: false };
 }
 
-const dbConfig = {
+interface dbConfigInterface {
+  client: string;
+  connection: {
+    database?: string;
+    host?: string;
+    port?: number;
+    user?: string;
+    password?: string;
+    sslmode: string;
+  };
+  searchPath: string[];
+}
+
+const dbConfig: dbConfigInterface = {
   client: "pg",
   connection: {
     database: process.env.DBNAME,
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    port: parseInt(<string>process.env.DB_PORT, 10) || 5432,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     sslmode: "require",
@@ -106,33 +117,35 @@ const scheduler = async () => {
     const minerInfo = await getMinerData();
     const scrapeForMFBData = await minefarmbuyScraper();
     const scrapeForKaboomData = await kaboomracksScraper();
-    const allData = scrapeForMFBData.concat(scrapeForKaboomData);
+    const allData = scrapeForMFBData?.concat(scrapeForKaboomData!);
 
-    const minerInfoDupCheck = allData.filter(
+    const minerInfoDupCheck = allData?.filter(
       (scapeData) =>
         !minerInfo.find((allAsicData) => scapeData.model === allAsicData.model)
     );
-    const marketInfoDupCheck = allData.filter(
+    const marketInfoDupCheck = allData?.filter(
       (scapeData) =>
         !marketInfo.find((allAsicData) => scapeData.id === allAsicData.id)
     );
     if (asic.length === 0) {
-      const minerInfoFirstDupCheck = scrapeForMFBData.filter(
+      const minerInfoFirstDupCheck = scrapeForMFBData?.filter(
         (scapeData) =>
-          !scrapeForKaboomData.find(
+          !scrapeForKaboomData?.find(
             (allAsicData) => scapeData.model === allAsicData.model
           )
       );
-      const firstDataInput = minerInfoFirstDupCheck.concat(scrapeForKaboomData);
+      const firstDataInput = minerInfoFirstDupCheck?.concat(
+        scrapeForKaboomData!
+      );
       await addMinerData(firstDataInput);
       await addMarketData(allData);
     }
-    if (minerInfoDupCheck.length > 0) {
+    if (minerInfoDupCheck!.length > 0) {
       await addMinerData(minerInfoDupCheck);
     }
-    if (marketInfoDupCheck.length > 0) {
+    if (marketInfoDupCheck!.length > 0) {
       await addMarketData(marketInfoDupCheck);
-    } 
+    }
     await db.destroy();
   } catch (err) {
     console.error("error in scheduler file", err);

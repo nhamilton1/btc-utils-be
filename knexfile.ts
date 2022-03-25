@@ -1,9 +1,9 @@
-require('dotenv').config()
-
-const pg = require('pg')
+import { defaults } from "pg";
+import * as dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 
 if (process.env.DATABASE_URL) {
-  pg.defaults.ssl = { rejectUnauthorized: false }
+  defaults.ssl = { rejectUnauthorized: false }
 }
 
 const sharedConfig = {
@@ -12,7 +12,7 @@ const sharedConfig = {
   seeds: { directory: './api/data/seeds' },
 }
 
-module.exports = {
+module.exports =  {
   development: {
     ...sharedConfig,
     connection: process.env.DEV_DATABASE_URL,
