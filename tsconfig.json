@@ -19,6 +19,13 @@
     "useUnknownInCatchVariables": false,
     "resolveJsonModule": true
   },
-  "include": ["api/**/*.ts", "api/**/*.js", "index.ts", "job-scheduler.ts", "knexfile.ts"],
+  "include": [
+    "api/**/*.ts",
+    "api/**/*.js",
+    "index.ts",
+    "job-scheduler.ts",
+    "knexfile.ts",
+    "delete-invalid-date.ts"
+  ],
   "exclude": ["node_modules", "<node_internals>/**", "test", "bin", "out"]
 }
