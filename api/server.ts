@@ -4,7 +4,7 @@ import helmet from "helmet";
 import { asicRouter } from "./miner-scrape/asic-miners-router";
 import { normalDistRouter } from "./normalDist/normalDistRouter";
 import { historicPriceRouter } from "./historic-prices/historic-prices-router";
-
+import { btcRouter } from "./btc-info/btc-router";
 
 const server = express();
 
@@ -15,10 +15,11 @@ server.use(cors());
 server.use("/api/nd", normalDistRouter);
 server.use("/api/historic_prices", historicPriceRouter);
 server.use("/api/asics", asicRouter);
+server.use("/api/btc", btcRouter);
 
 server.use(
   (
-    err: { status: Number; message: String; stack: String },
+    err: { status: number; message: string; stack: string },
     _req: Request,
     res: Response,
     next: NextFunction
