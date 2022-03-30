@@ -1,5 +1,5 @@
 import moment from "moment";
-import  Puppeteer from "puppeteer";
+import Puppeteer from "puppeteer";
 import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
 
 interface minefarmbuyDataInterface {
@@ -11,6 +11,16 @@ interface minefarmbuyDataInterface {
   price: number;
   date: Date | string;
   id: string;
+}
+
+interface removeImgEtcInterface {
+  resourceType: () => string;
+  abort: () => void;
+  continue: () => void;
+}
+
+interface InnerTextInterface {
+  innerText: string;
 }
 
 const minefarmbuyScraper = async () => {
@@ -25,7 +35,8 @@ const minefarmbuyScraper = async () => {
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
     await page.setRequestInterception(true);
-    page.on("request", (req): void => {
+
+    page.on("request", (req: removeImgEtcInterface): void => {
       if (
         req.resourceType() == "stylesheet" ||
         req.resourceType() == "font" ||
@@ -43,7 +54,8 @@ const minefarmbuyScraper = async () => {
     //gets all the urls on the btc asic product list page
     const urls = await page.$$eval(
       "#blog > div > div > div > div > article > div > ul > li > a ",
-      (title): string => title.map((url): string => url.href)
+      (title: { href: string }[]): string[] =>
+        title.map((url: { href: string }): string => url.href)
     );
 
     //filters out anything that are not asics
@@ -66,27 +78,34 @@ const minefarmbuyScraper = async () => {
 
       const asicModel = await page.$eval(
         "div > div.summary.entry-summary > h1",
-        (el: { innerText: string; }): string => el.innerText
+        (el: InnerTextInterface): string => el.innerText
       );
 
       //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
-      const incoterms = await page.$$eval("#incoterms > option", (node: { innerText: string; }[]) =>
-        node.map((th: { innerText: string; }) => th.innerText)
+      const incoterms = await page.$$eval(
+        "#incoterms > option",
+        (node: InnerTextInterface[]) =>
+          node.map((th: InnerTextInterface) => th.innerText)
       );
 
       //checks for efficiency dropdown when page first loads
-      const effici = await page.$$eval("#efficiency > option", (node: { innerText: string; }[]) =>
-        node.map((th: { innerText: string; }) => th.innerText)
+      const effici = await page.$$eval(
+        "#efficiency > option",
+        (node: InnerTextInterface[]) =>
+          node.map((th: InnerTextInterface) => th.innerText)
       );
 
-      const filteredEfficiency = effici.filter((t: string) => t.match(/J\/th/i));
+      const filteredEfficiency = effici.filter((t: string) =>
+        t.match(/J\/th/i)
+      );
 
       //$$evail on most because if it was undefined, it would crash
       //could move this down to the if statement and make it $eval
       //have to remember to remove the [0]
       const ifNoPriceFromAsicPrice = await page.$$eval(
         "div > div.summary.entry-summary > p > span > bdi",
-        (el: { innerText: string; }[]) => el.map((e: { innerText: string; }) => e.innerText)
+        (el: InnerTextInterface[]) =>
+          el.map((e: InnerTextInterface) => e.innerText)
       );
 
       //checks for OoS
@@ -94,14 +113,17 @@ const minefarmbuyScraper = async () => {
       // eslint-disable-next-line no-unused-vars
       const oos = await page.$$eval(
         "div > div.summary.entry-summary > form > p",
-        (el: { innerText: string; }[]) => el.map((e: { innerText: string; }) => e.innerText)
+        (el: InnerTextInterface[]) =>
+          el.map((e: InnerTextInterface) => e.innerText)
       );
 
       //no incoterms dropdown and no efficiency dropdown
       if (incoterms.length === 0 && filteredEfficiency.length === 0) {
         //checks for hashrate dropdown when page first loads
-        const hashOption = await page.$$eval("#hashrate > option", (node: { innerText: string; }[]) =>
-          node.map((th: { innerText: string; }) => th.innerText)
+        const hashOption = await page.$$eval(
+          "#hashrate > option",
+          (node: InnerTextInterface[]) =>
+            node.map((th: InnerTextInterface) => th.innerText)
         );
 
         //filters values for only ths, no batches or option value
@@ -115,12 +137,13 @@ const minefarmbuyScraper = async () => {
 
           const asicPrice = await page.$$eval(
             "div > div > form > div > div > div > span > span > bdi",
-            (node: { innerText: string; }[]) => node.map((price: { innerText: string; }) => price.innerText)
+            (node: InnerTextInterface[]) =>
+              node.map((price: InnerTextInterface) => price.innerText)
           );
 
           const powerDraw = await page.$eval(
             "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
-            (el: { innerText: string; }) => el.innerText
+            (el: InnerTextInterface) => el.innerText
           );
 
           // having this filter so the regex knows where to stop
@@ -165,25 +188,30 @@ const minefarmbuyScraper = async () => {
 
           const hashrateOptionForEff = await page.$$eval(
             "#hashrate > option",
-            (node) => node.map((th) => th.innerText)
+            (node: InnerTextInterface[]) =>
+              node.map((th: InnerTextInterface) => th.innerText)
           );
 
-          const efficiencyHashrateOpt = hashrateOptionForEff.filter((t) => {
-            return t.match(/th/i) && parseInt(t.charAt(0));
-          });
+          const efficiencyHashrateOpt = hashrateOptionForEff.filter(
+            (t: string) => {
+              return t.match(/th/i) && parseInt(t.charAt(0));
+            }
+          );
 
           for (const th of efficiencyHashrateOpt.values()) {
             await page.select("select#hashrate", th);
 
             let asicPrice = await page.$$eval(
               "div > div > form > div > div > div > span > span > bdi",
-              (node) => node.map((price) => price.innerText)
+              (node: InnerTextInterface[]) =>
+                node.map((price: InnerTextInterface) => price.innerText)
             );
 
             if (asicPrice.length === 0) {
               asicPrice = await page.$$eval(
                 "div > div.summary.entry-summary > p > span > bdi",
-                (node) => node.map((price) => price.innerText)
+                (node: InnerTextInterface[]) =>
+                  node.map((price: InnerTextInterface) => price.innerText)
               );
             }
 
@@ -223,4 +251,4 @@ const minefarmbuyScraper = async () => {
   }
 };
 
-export default minefarmbuyScraper
+export default minefarmbuyScraper;

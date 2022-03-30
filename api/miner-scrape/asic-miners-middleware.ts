@@ -8,7 +8,6 @@ import { addMinerData, getMinerData } from "./models/miner-data-model";
 // this takes up too much memory for heroku and would have to pay to use it.
 // took up mem=643M(125.7%), last test used mem=727M(141.4%)
 
-
 const asicData = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const asic = await getAllIds();
@@ -35,7 +34,9 @@ const asicData = async (req: Request, res: Response, next: NextFunction) => {
             (allAsicData) => scapeData.model === allAsicData.model
           )
       );
-      const firstDataInput = minerInfoFirstDupCheck?.concat(scrapeForKaboomData!);
+      const firstDataInput = minerInfoFirstDupCheck?.concat(
+        scrapeForKaboomData!
+      );
       await addMinerData(firstDataInput!);
       await addMarketData(allData);
       next();
@@ -45,11 +46,11 @@ const asicData = async (req: Request, res: Response, next: NextFunction) => {
     }
     if (marketInfoDupCheck!.length > 0) {
       await addMarketData(marketInfoDupCheck);
-    } 
-    next()
+    }
+    next();
   } catch (err) {
     next(err);
   }
 };
 
-export default asicData
+export default asicData;

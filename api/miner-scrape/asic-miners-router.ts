@@ -4,8 +4,7 @@ import * as express from "express";
 
 const router = express.Router();
 
-
-router.get("/", async (req, res, next) => {
+router.get("/", async (_req, res, next) => {
   try {
     const asicMiners = await getAll();
     res.json(asicMiners);
@@ -14,7 +13,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/asics-scheduler", asicData, async (req, res, next) => {
+router.get("/asics-scheduler", asicData, async (_req, res, next) => {
   try {
     const asicMiners = await getAll();
     res.json(asicMiners);
@@ -23,4 +22,4 @@ router.get("/asics-scheduler", asicData, async (req, res, next) => {
   }
 });
 
-export {router as asicRouter}
+export { router as asicRouter };
