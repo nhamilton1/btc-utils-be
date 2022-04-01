@@ -57,9 +57,15 @@ const kaboomracksScraper = async () => {
         moqTest![0] === 1
       ) {
         let vendor = "Kaboomracks";
+        //adding price array for when they have multiple prices, takes last one in the array. they striked out a price to show a discount
+        let priceArray = minerData
+          .match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
+          .split(" ");
+
         let price = Number(
-          minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
+          priceArray[priceArray.length - 1].replace(/[^.\d]/g, "")
         );
+
         // new way to check for date, if date is not valid it trys a different way
         // usually there are two | which caused it to break
         let date = moment(
