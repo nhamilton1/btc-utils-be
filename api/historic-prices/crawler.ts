@@ -27,7 +27,7 @@ interface formattedGldInterface {
   gld_price: null | number;
 }
 
-export const scrape = async (mostRecentDate: string | number | Date) => {
+export const scrape = async (mostRecentDate: string) => {
   try {
     mostRecentDate = moment(mostRecentDate).format("MMM DD YYYY");
 

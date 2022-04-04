@@ -3,6 +3,7 @@ import { defaults } from "pg";
 import * as dotenv from "dotenv";
 import minefarmbuyScraper from "./api/miner-scrape/minefarmbuy/minefarmbuy-crawler";
 import kaboomracksScraper from "./api/miner-scrape/kaboomracks/kaboomracks-crawler";
+import upStreamDataCrawler from "./api/miner-scrape/upstreamdata/upstreamdata-crawler";
 
 dotenv.config();
 
@@ -116,8 +117,10 @@ const scheduler = async () => {
     const marketInfo = await getMarketData();
     const minerInfo = await getMinerData();
     const scrapeForMFBData = await minefarmbuyScraper();
+    const scrapeForUpstreamData = await upStreamDataCrawler();
     const scrapeForKaboomData = await kaboomracksScraper();
-    const allData = scrapeForMFBData?.concat(scrapeForKaboomData!);
+    const allData = scrapeForMFBData?.concat(scrapeForKaboomData!, scrapeForUpstreamData!);
+
 
     const minerInfoDupCheck = allData?.filter(
       (scapeData) =>
