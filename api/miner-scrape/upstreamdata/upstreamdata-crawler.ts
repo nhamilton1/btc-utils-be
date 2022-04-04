@@ -58,10 +58,15 @@ const upStreamDataCrawler = async () => {
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
       // .slice(0, -3) removes the h/s from the title
-      const asicModel: string = await page.$eval(
+      let asicModel: string = await page.$eval(
         "div > div.summary.entry-summary > h1",
         (el: { innerText: string }): string => el.innerText.slice(0, -3)
       );
+
+      //puts a space between S19j and Pro
+      if (asicModel.includes("S19jPro")) {
+        asicModel = asicModel.replace("S19jPro", "S19j Pro");
+      }
 
       // .replace(/[^\d.-]/g, '') removes all the non-numbers from the efficiency
       const efficiency: number = await page.$eval(
