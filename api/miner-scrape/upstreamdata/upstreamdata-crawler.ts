@@ -23,8 +23,6 @@ const upStreamDataCrawler = async () => {
   let browser;
   try {
     browser = await Puppeteer.launch({
-      slowMo: 5,
-      headless: false,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -104,13 +102,10 @@ const upStreamDataCrawler = async () => {
       });
     }
     await browser.close();
-    console.log(upstreamdataAsics);
     return upstreamdataAsics;
   } catch (err) {
     console.log("Could not create a browser instance => : ", err);
   }
 };
-
-upStreamDataCrawler();
 
 export default upStreamDataCrawler;
