@@ -24,6 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^3.12.0",
     "axios": "^0.24.0",
     "cheerio": "^1.0.0-rc.10",
     "cors": "2.8.5",
@@ -50,6 +51,7 @@
     "eslint": "8.4.1",
     "jest": "27.4.4",
     "nodemon": "2.0.15",
+    "prisma": "^3.12.0",
     "supertest": "6.1.6",
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
