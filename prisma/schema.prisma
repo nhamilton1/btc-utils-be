@@ -15,10 +15,10 @@ model historical_prices {
 }
 
 model miner_data {
-  model     String @id
-  th        Float
-  watts     Float
-  efficency Float
+  model      String @id
+  th         Float
+  watts      Float
+  efficiency Float
 }
 
 model market_data {
