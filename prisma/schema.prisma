@@ -7,31 +7,39 @@ datasource db {
   url      = env("LOCAL_DATABASE_URL")
 }
 
-model historical_prices {
-  date      String @id
-  btc_price Float
-  gld_price Float?
-  spy_price Float?
+model HistoricalPrices {
+  date        String    @id @unique @map("date")
+  btc_price   Float     @map("btc_price")
+  gld_price   Float?    @map("gld_price")
+  spy_price   Float?    @map("spy_price")
+
+  @@map("historical_prices")
 }
 
-model miner_data {
-  model      String @id
-  th         Float
-  watts      Float
-  efficiency Float
+model minerData {
+  model       String   @id @unique @map("model")
+  th          Float    @map("th")
+  watts       Float    @map("watts")
+  efficiency  Float    @map("efficiency")
+
+  @@map("miner_data")
 }
 
-model market_data {
-  id     String @id
-  vendor String
-  model  String
-  price  Float
-  date   String
+model marketData {
+  id          String    @id @unique @map("id")
+  vendor      String    @map("vendor")
+  model       String    @map("model")
+  price       Float     @map("price")
+  date        String    @map("date")
+
+  @@map("market_data")
 }
 
-model users {
-  id       String @id
-  name     String
-  email    String
-  password String
+model Users {
+  id          String    @id
+  name        String    @map("name")
+  email       String    @map("email")
+  password    String    @map("password")
+
+  @@map("users")
 }

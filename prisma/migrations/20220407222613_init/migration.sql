@@ -13,7 +13,7 @@ CREATE TABLE "miner_data" (
     "model" TEXT NOT NULL,
     "th" DOUBLE PRECISION NOT NULL,
     "watts" DOUBLE PRECISION NOT NULL,
-    "efficency" DOUBLE PRECISION NOT NULL,
+    "efficiency" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "miner_data_pkey" PRIMARY KEY ("model")
 );
@@ -38,3 +38,12 @@ CREATE TABLE "users" (
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "historical_prices_date_key" ON "historical_prices"("date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "miner_data_model_key" ON "miner_data"("model");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "market_data_id_key" ON "market_data"("id");
