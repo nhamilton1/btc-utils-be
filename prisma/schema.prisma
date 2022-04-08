@@ -21,7 +21,6 @@ model minerData {
   th          Float    @map("th")
   watts       Float    @map("watts")
   efficiency  Float    @map("efficiency")
-  marketData  marketData[]
 
   @@map("miner_data")
 }
@@ -29,7 +28,6 @@ model minerData {
 model marketData {
   id          String    @id @unique @map("id")
   vendor      String    @map("vendor")
-  modelRel    minerData @relation(fields: [model], references: [model])
   model       String    @map("model")
   price       Float     @map("price")
   date        String    @map("date")

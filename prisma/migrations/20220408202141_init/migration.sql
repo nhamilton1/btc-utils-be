@@ -47,6 +47,3 @@ CREATE UNIQUE INDEX "miner_data_model_key" ON "miner_data"("model");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "market_data_id_key" ON "market_data"("id");
-
--- AddForeignKey
-ALTER TABLE "market_data" ADD CONSTRAINT "market_data_model_fkey" FOREIGN KEY ("model") REFERENCES "miner_data"("model") ON DELETE RESTRICT ON UPDATE CASCADE;
