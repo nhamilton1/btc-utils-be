@@ -1,4 +1,4 @@
-import { marketData, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -21,6 +21,5 @@ export const getAll = async (): Promise<MarketData[]> => {
     FROM "market_data"
     INNER JOIN "miner_data" ON market_data.model = miner_data.model  
   `;
-  console.log(allAsics);
   return allAsics;
 };

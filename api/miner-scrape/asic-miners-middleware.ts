@@ -1,19 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import kaboomracksScraper from "./kaboomracks/kaboomracks-crawler";
 import minefarmbuyScraper from "./minefarmbuy/minefarmbuy-crawler";
-import { getAll } from "./models/asic-miners-model";
 import { addMarketData, getMarketData } from "./models/market-data-model";
 import { addMinerData, getMinerData } from "./models/miner-data-model";
 import upStreamDataCrawler from "./upstreamdata/upstreamdata-crawler";
 
-// this takes up too much memory for heroku and would have to pay to use it.
-// took up mem=643M(125.7%), last test used mem=727M(141.4%)
-
-
 const asicData = async (req: Request, res: Response, next: NextFunction) => {
   try {
-
-    const asic = await getAll();
     const minerInfo = await getMinerData();
     const marketInfo = await getMarketData();
     const scrapeForMFBData = await minefarmbuyScraper();
@@ -34,26 +27,27 @@ const asicData = async (req: Request, res: Response, next: NextFunction) => {
         !marketInfo.find((allAsicData) => scapeData.id === allAsicData.id)
     );
 
-    if (asic.length === 0) {
-      const minerInfoFirstDupCheck = scrapeForMFBData?.filter(
-        (scapeData) =>
-          !scrapeForKaboomData?.find(
-            (allAsicData) => scapeData.model === allAsicData.model
-          )
-      );
-      const firstDataInput = minerInfoFirstDupCheck?.concat(
-        scrapeForKaboomData!
-      );
-      await addMinerData(firstDataInput!);
-      await addMarketData(allData);
-      next();
-    }
     if (minerInfoDupCheck!.length > 0) {
-      await addMinerData(minerInfoDupCheck!);
+      const minerInfo = minerInfoDupCheck?.map((x) => ({
+        model: x.model,
+        th: x.th,
+        watts: x.watts,
+        efficiency: x.efficiency,
+      }));
+      await addMinerData(minerInfo!);
     }
+
     if (marketInfoDupCheck!.length > 0) {
-      await addMarketData(marketInfoDupCheck);
+      const marketInfo = marketInfoDupCheck?.map((x) => ({
+        id: x.id,
+        vendor: x.vendor,
+        model: x.model,
+        price: x.price,
+        date: x.date,
+      }));
+      await addMarketData(marketInfo!);
     }
+
     next();
   } catch (err) {
     next(err);

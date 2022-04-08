@@ -9,7 +9,7 @@ export interface minefarmbuyDataInterface {
   watts: number;
   efficiency: number;
   price: number;
-  date: Date | string;
+  date: string;
   id: string;
 }
 

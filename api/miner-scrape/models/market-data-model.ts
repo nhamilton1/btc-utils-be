@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -7,46 +7,20 @@ export const getMarketData = async () => {
   return marketData;
 };
 
-export const addMarketData = async (item) => {
-  const marketData = await prisma.marketData.create({
-    data: {
-      date: item.date,
-      model: item.model,
-      price: item.price,
-      vendor: item.vendor,
-      id: item.id,
-    },
-  });
-  return marketData;
+type marketDataType = {
+  id: string;
+  vendor: string;
+  model: string;
+  price: number;
+  date: string;
 };
 
-// import { db } from "../../data/db-config";
+async function createMarketData(
+  data: Prisma.marketDataCreateManyInput[]
+): Promise<Prisma.BatchPayload> {
+  return await prisma.marketData.createMany({ data });
+}
 
-// export const getMarketData = async () => {
-//   const marketData = await db("market_data").select(
-//     "id",
-//     "vendor",
-//     "model",
-//     "price",
-//     "date"
-//   );
-//   return marketData;
-// };
-
-// export const addMarketData = async (item) => {
-//   const marketData = item.map((x) => ({
-//     id: x.id,
-//     vendor: x.vendor,
-//     model: x.model,
-//     price: x.price,
-//     date: x.date,
-//   }));
-//   const [newItemObject] = await db("market_data").insert(marketData, [
-//     "id",
-//     "vendor",
-//     "model",
-//     "price",
-//     "date",
-//   ]);
-//   return newItemObject;
-// };
+export const addMarketData = async (item: marketDataType[]) => {
+  return await createMarketData(item);
+};
