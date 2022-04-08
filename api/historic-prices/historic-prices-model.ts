@@ -3,7 +3,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const getLastRow = async () => {
-  const lastRow = await prisma.marketData.findMany({
+  const lastRow = await prisma.historicalPrices.findMany({
     orderBy: { date: "desc" },
     take: 1,
   });
@@ -13,8 +13,8 @@ export const getLastRow = async () => {
 type addHistoryData = {
   date: string;
   btc_price: number;
-  spy_price: number;
-  gld_price: number;
+  spy_price: number | null;
+  gld_price: number | null;
 };
 
 async function createHistoricalPrices(
