@@ -20,6 +20,7 @@ export const getAll = async (): Promise<MarketData[]> => {
     miner_data.th, miner_data.watts, miner_data.efficiency
     FROM "market_data"
     INNER JOIN "miner_data" ON market_data.model = miner_data.model  
+    ORDER BY market_data.date DESC
   `;
   return allAsics;
 };
