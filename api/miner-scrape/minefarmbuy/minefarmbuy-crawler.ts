@@ -2,7 +2,7 @@ import moment from "moment";
 import Puppeteer from "puppeteer";
 import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
 
-interface minefarmbuyDataInterface {
+export interface minefarmbuyDataInterface {
   vendor: string;
   model: string;
   th: number;
