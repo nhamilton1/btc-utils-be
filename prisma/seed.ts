@@ -54,7 +54,7 @@ const main = async () => {
   });
 
   for (let seed of data) {
-      await prisma.historical_prices.create({
+      await prisma.historicalPrices.create({
         data: seed
       })
   }
