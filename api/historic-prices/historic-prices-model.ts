@@ -1,63 +1,48 @@
-import { db } from "../data/db-config";
+import { Prisma, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const getLastRow = async () => {
+  const lastRow = await prisma.marketData.findMany({
+    orderBy: { date: "desc" },
+    take: 1,
+  });
+  return lastRow;
+};
+
+type addHistoryData = {
+  date: string;
+  btc_price: number;
+  spy_price: number;
+  gld_price: number;
+};
+
+async function createHistoricalPrices(
+  data: Prisma.HistoricalPricesCreateManyInput[]
+): Promise<Prisma.BatchPayload> {
+  return await prisma.historicalPrices.createMany({ data });
+}
+
+export const add = async (item: addHistoryData[]) => {
+  return await createHistoricalPrices(item);
+};
 
 export const sqlRawFindBetweenDates = async (
   startDate: string,
   endDate: string
 ) => {
-  const dates = await db
-    .with(
-      "historical_prices",
-      ["date", "btc_price", "spy_price", "gld_price"],
-      db.raw(
-        'SELECT date, btc_price, spy_price, gld_price, MAX(CASE WHEN spy_price IS NOT NULL THEN date END) OVER(ORDER BY date ROWS UNBOUNDED PRECEDING) AS spy, MAX(CASE WHEN gld_price IS NOT NULL THEN date END) OVER( ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld from "historical_prices"'
-      )
-    )
-    .select(
-      "date",
-      "btc_price",
-      db.raw(
-        "MAX(spy_price) OVER( PARTITION BY spy ORDER BY date ROWS UNBOUNDED PRECEDING ) AS spy_price"
-      ),
-      db.raw(
-        "MAX(gld_price) OVER( PARTITION BY gld ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld_price"
-      )
-    )
-    .from("historical_prices")
-    .where("date", ">=", startDate)
-    .where("date", "<=", endDate)
-    .orderBy("date", "ASC");
-  return dates;
-};
-
-export const add = async (item: any[]) => {
-  const updatedDates = item.map(
-    (
-      x
-    ): {
-      date: string;
-      btc_price: number;
-      spy_price: number;
-      gld_price: number;
-    } => ({
-      date: x.date,
-      btc_price: x.btc_price,
-      spy_price: x.spy_price,
-      gld_price: x.gld_price,
-    })
-  );
-  const [newItemObject] = await db("historical_prices").insert(updatedDates, [
-    "date",
-    "btc_price",
-    "spy_price",
-    "gld_price",
-  ]);
-  return newItemObject;
-};
-
-export const getLastRow = async () => {
-  const getLastRow = await db("historical_prices")
-    .select("date", "btc_price", "spy_price", "gld_price")
-    .orderBy("date", "DESC")
-    .limit(1);
-  return getLastRow;
+  return await prisma.$queryRaw`
+    WITH historical_prices (date, btc_price, spy_price, gld_price) as (
+    SELECT date, btc_price, spy_price, gld_price, 
+    MAX(CASE WHEN spy_price IS NOT NULL THEN date END) 
+    OVER(ORDER BY date ROWS UNBOUNDED PRECEDING) 
+    AS spy, MAX(CASE WHEN gld_price IS NOT NULL THEN date END) 
+    OVER( ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld from historical_prices)
+    SELECT date, btc_price,
+    MAX(spy_price) OVER( PARTITION BY spy ORDER BY date ROWS UNBOUNDED PRECEDING ) AS spy_price,
+    MAX(gld_price) OVER( PARTITION BY gld ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld_price
+    FROM historical_prices
+    WHERE date BETWEEN ${startDate} and ${endDate}
+    ORDER BY date ASC
+  `;
 };
