@@ -1,33 +1,26 @@
-import { db } from "../../data/db-config";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 
-export const getAll = async () => {
-  const asics = await db("market_data as market")
-    .join("miner_data as miner", "miner.model", "market.model")
-    .select(
-      "market.vendor",
-      "market.price",
-      "market.date",
-      "market.model",
-      "miner.th",
-      "miner.watts",
-      'miner.efficiency'
-    ).orderBy('date', 'desc')
-  return asics;
+type MarketData = {
+  id: string;
+  vendor: string;
+  price: number;
+  date: string;
+  model: string;
+  th: number;
+  watts: number;
+  efficiency: number;
 };
 
-export const getAllIds = async () => {
-  const asics = await db("market_data as market")
-    .join("miner_data as miner", "miner.model", "market.model")
-    .select(
-      "market.id",
-      "market.vendor",
-      "market.price",
-      "market.date",
-      "market.model",
-      "miner.th",
-      "miner.watts",
-      'miner.efficiency'
-    );
-  return asics;
+export const getAll = async (): Promise<MarketData[]> => {
+  const allAsics: MarketData[] = await prisma.$queryRaw`
+    SELECT 
+    market_data.vendor, market_data.price, market_data.date, market_data.model, 
+    miner_data.th, miner_data.watts, miner_data.efficiency
+    FROM "market_data"
+    INNER JOIN "miner_data" ON market_data.model = miner_data.model  
+    ORDER BY market_data.date DESC
+  `;
+  return allAsics;
 };

@@ -2,14 +2,14 @@ import moment from "moment";
 import Puppeteer from "puppeteer";
 import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
 
-interface minefarmbuyDataInterface {
+export interface minefarmbuyDataInterface {
   vendor: string;
   model: string;
   th: number;
   watts: number;
   efficiency: number;
   price: number;
-  date: Date | string;
+  date: string;
   id: string;
 }
 

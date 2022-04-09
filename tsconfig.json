@@ -11,7 +11,7 @@
     "allowJs": true,
     "moduleResolution": "node",
     "types": ["node"],
-    "lib": ["es6"],
+    "lib": ["esnext"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -24,7 +24,7 @@
     "api/**/*.js",
     "index.ts",
     "job-scheduler.ts",
-    "knexfile.ts",
+    "prisma/**/*.ts",
     "delete-invalid-date.ts"
   ],
   "exclude": ["node_modules", "<node_internals>/**", "test", "bin", "out"]

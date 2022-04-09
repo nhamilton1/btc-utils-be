@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model HistoricalPrices {
+  date        String    @id @unique @map("date")
+  btc_price   Float     @map("btc_price")
+  gld_price   Float?    @map("gld_price")
+  spy_price   Float?    @map("spy_price")
+
+  @@map("historical_prices")
+}
+
+model minerData {
+  model       String   @id @unique @map("model")
+  th          Float    @map("th")
+  watts       Float    @map("watts")
+  efficiency  Float    @map("efficiency")
+
+  @@map("miner_data")
+}
+
+model marketData {
+  id          String    @id @unique @map("id")
+  vendor      String    @map("vendor")
+  model       String    @map("model")
+  price       Float     @map("price")
+  date        String    @map("date")
+
+  @@map("market_data")
+}
+
+model Users {
+  id          String    @id
+  name        String    @map("name")
+  email       String    @map("email")
+  password    String    @map("password")
+
+  @@map("users")
+}
