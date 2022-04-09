@@ -15,9 +15,8 @@
     "studio": "prisma studio",
     "generate": "prisma generate",
     "pushH": "heroku run prisma db push -a btc-utils-be",
-    "rollbackh": "heroku run knex migrate:rollback -a btc-utils-be",
     "databaseh": "heroku pg:psql -a btc-utils-be",
-    "seedh": "heroku run knex seed:run -a btc-utils-be",
+    "seedh": "heroku run ts-node prisma/seed.ts",
     "test": "cross-env NODE_ENV=testing jest --verbose --runInBand",
     "deploy": "git push heroku main"
   },
