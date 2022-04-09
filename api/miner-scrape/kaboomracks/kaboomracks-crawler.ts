@@ -11,7 +11,7 @@ export interface kaboomracksInterface {
   watts: number;
   efficiency: number;
   price: number;
-  date: Date | string;
+  date: string;
   id: string;
 }
 
@@ -34,19 +34,23 @@ const kaboomracksScraper = async () => {
       let moq = minerData.match(/(?=order \s*).*?(?=\s*ship)/g);
 
       //adding this because it was messing up the regex, had to account for lot
+      //tests for outliers for moq
       if (moq === null) {
-        moq = minerData.match(/(?=each \s*).*?(?<=\s*lot)/g);
+        moq =
+          minerData.match(/(?=each \s*).*?(?<=\s*lot)/g) !== null
+            ? minerData.match(/(?=each \s*).*?(?<=\s*lot)/g)
+            : minerData.match(/(?=minimum \s*).*?(?<=\s*Contact)/g);
       }
-
-      //tests for moq of 1
 
       //TODO: TEST OUT THIS MOQ
       const moqTest = moq?.map((ele): (number | null)[] =>
         ele
           .split(" ")
-          .map((n: string): number | null =>
-            typeof n === "string" && !Number.isNaN(Number(n)) ? Number(n) : null
-          )
+          .map((n: string): number | null => {
+            return typeof n === "string" && !Number.isNaN(Number(n))
+              ? Number(n)
+              : null;
+          })
           .filter((i): number | null => i)
       )[0];
 
