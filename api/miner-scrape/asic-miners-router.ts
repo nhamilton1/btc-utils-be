@@ -9,12 +9,6 @@ const router = express.Router();
 router.get("/", async (_req, res, next) => {
   try {
     const asicMiners = await getAll()
-      .catch((e) => {
-        throw e;
-      })
-      .finally(async () => {
-        await prisma.$disconnect();
-      });
     res.json(asicMiners);
   } catch (err) {
     next(err);
