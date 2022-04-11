@@ -27,9 +27,9 @@ interface formattedGldInterface {
   gld_price: null | number;
 }
 
-export const scrape = async (mostRecentDate: string) => {
+export const scrape = async (mostRecentDate: Date) => {
   try {
-    mostRecentDate = moment(mostRecentDate).format("MMM DD YYYY");
+    mostRecentDate = moment(mostRecentDate).format("MMM DD YYYY") as unknown as Date;
 
     const { data: dataBtc } = await axios.get(
       "https://finance.yahoo.com/quote/BTC-USD/history/"
