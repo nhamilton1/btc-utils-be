@@ -8,7 +8,7 @@ datasource db {
 }
 
 model HistoricalPrices {
-  date        String    @id @unique @map("date")
+  date        DateTime  @id @unique @map("date") @db.Date()
   btc_price   Float     @map("btc_price")
   gld_price   Float?    @map("gld_price")
   spy_price   Float?    @map("spy_price")
@@ -30,7 +30,7 @@ model marketData {
   vendor      String    @map("vendor")
   model       String    @map("model")
   price       Float     @map("price")
-  date        String    @map("date")
+  date        DateTime  @map("date") @db.Date()
 
   @@map("market_data")
 }
