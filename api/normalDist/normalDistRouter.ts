@@ -5,7 +5,7 @@ import * as express from "express";
 const router = express.Router()
 
 router.get('/sanity_test', (req, res) => {
-    res.json('sanity test')
+    res.status(200).json('sanity test')
 })
 
 router.get('/pool_block_counter', async (req, res, next) => {
