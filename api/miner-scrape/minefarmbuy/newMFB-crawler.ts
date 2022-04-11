@@ -1,7 +1,7 @@
 import moment from "moment";
-import { launch } from "puppeteer";
+import Puppeteer from "puppeteer";
 import { sha1, convertPowerDraw, convertEfficiency } from "../helpers";
-
+//#TODO: getting inconsistant results, need to look into this
 interface minefarmbuyDataInterface {
   vendor: string;
   model: string;
@@ -13,11 +13,20 @@ interface minefarmbuyDataInterface {
   id: string;
 }
 
+interface removeImgEtcInterface {
+  resourceType: () => string;
+  abort: () => void;
+  continue: () => void;
+}
+
+interface InnerTextInterface {
+  innerText: string;
+}
+
 const mfbScraper = async () => {
   const withBrowser = async (fn) => {
-    // adding slowMo: 5 fixes the bug where asics with just the hashrate
-    // option would push hashrates that were not there
-    const browser = await launch({
+    const browser = await Puppeteer.launch({
+      slowMo: 2,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -44,13 +53,15 @@ const mfbScraper = async () => {
   const urls = await withBrowser(async (browser) => {
     return withPage(browser)(async (page) => {
       await page.goto("https://minefarmbuy.com/product-category/btc-asics/");
+      //gets all the urls on the btc asic product list page
       const urls = await page.$$eval(
         "#blog > div > div > div > div > article > div > ul > li > a ",
-        (title) => title.map((url) => url.href)
+        (title: { href: string }[]): string[] =>
+          title.map((url: { href: string }): string => url.href)
       );
 
       //filters out anything that are not asics
-      const filteredUrls = urls.filter((word) => {
+      const filteredUrls = urls.filter((word): string => {
         return (
           word.includes("whatsminer-m") ||
           word.includes("antminer-s") ||
@@ -70,7 +81,7 @@ const mfbScraper = async () => {
         return withPage(browser)(async (page) => {
           await page.setViewport({ width: 1920, height: 1080 });
           await page.setRequestInterception(true);
-          page.on("request", (req) => {
+          page.on("request", (req: removeImgEtcInterface): void => {
             if (
               req.resourceType() == "stylesheet" ||
               req.resourceType() == "font" ||
@@ -81,32 +92,40 @@ const mfbScraper = async () => {
               req.continue();
             }
           });
+
           let minefarmbuyData: minefarmbuyDataInterface[] = [];
           await page.goto(url, { waitUntil: "domcontentloaded" });
 
           const asicModel = await page.$eval(
             "div > div.summary.entry-summary > h1",
-            (el) => el.innerText
+            (el: InnerTextInterface): string => el.innerText
           );
 
           //checks for ddp and dap, which usually means MOQ of 100 or more from what i saw on mfb
-          const incoterms = await page.$$eval("#incoterms > option", (node) =>
-            node.map((th) => th.innerText)
+          const incoterms = await page.$$eval(
+            "#incoterms > option",
+            (node: InnerTextInterface[]) =>
+              node.map((th: InnerTextInterface) => th.innerText)
           );
 
           //checks for efficiency dropdown when page first loads
-          const effici = await page.$$eval("#efficiency > option", (node) =>
-            node.map((th) => th.innerText)
+          const effici = await page.$$eval(
+            "#efficiency > option",
+            (node: InnerTextInterface[]) =>
+              node.map((th: InnerTextInterface) => th.innerText)
           );
 
-          const filteredEfficiency = effici.filter((t) => t.match(/J\/th/i));
+          const filteredEfficiency = effici.filter((t: string) =>
+            t.match(/J\/th/i)
+          );
 
           //$$evail on most because if it was undefined, it would crash
           //could move this down to the if statement and make it $eval
           //have to remember to remove the [0]
           const ifNoPriceFromAsicPrice = await page.$$eval(
             "div > div.summary.entry-summary > p > span > bdi",
-            (el) => el.map((e) => e.innerText)
+            (el: InnerTextInterface[]) =>
+              el.map((e: InnerTextInterface) => e.innerText)
           );
 
           //checks for OoS
@@ -114,14 +133,17 @@ const mfbScraper = async () => {
           // eslint-disable-next-line no-unused-vars
           const oos = await page.$$eval(
             "div > div.summary.entry-summary > form > p",
-            (el) => el.map((e) => e.innerText)
+            (el: InnerTextInterface[]) =>
+              el.map((e: InnerTextInterface) => e.innerText)
           );
 
           //no incoterms dropdown and no efficiency dropdown
           if (incoterms.length === 0 && filteredEfficiency.length === 0) {
             //checks for hashrate dropdown when page first loads
-            const hashOption = await page.$$eval("#hashrate > option", (node) =>
-              node.map((th) => th.innerText)
+            const hashOption = await page.$$eval(
+              "#hashrate > option",
+              (node: InnerTextInterface[]) =>
+                node.map((th: InnerTextInterface) => th.innerText)
             );
 
             //filters values for only ths, no batches or option value
@@ -135,12 +157,13 @@ const mfbScraper = async () => {
 
               const asicPrice = await page.$$eval(
                 "div > div > form > div > div > div > span > span > bdi",
-                (node) => node.map((price) => price.innerText)
+                (node: InnerTextInterface[]) =>
+                  node.map((price: InnerTextInterface) => price.innerText)
               );
 
               const powerDraw = await page.$eval(
                 "#tab-additional_information > table > tbody > tr.woocommerce-product-attributes-item.woocommerce-product-attributes-item--attribute_power-draw > td",
-                (el) => el.innerText
+                (el: InnerTextInterface) => el.innerText
               );
 
               // having this filter so the regex knows where to stop
@@ -182,7 +205,7 @@ const mfbScraper = async () => {
                           .replace(",", "")
                       )
                     : Number(asicPrice[0].replace("$", "").replace(",", "")),
-                date: moment().format("MM-DD-YYYY"),
+                date: moment(new Date()).format("MM-DD-YYYY"),
                 id: sha1(id),
               });
             }
@@ -192,20 +215,32 @@ const mfbScraper = async () => {
 
               const hashrateOptionForEff = await page.$$eval(
                 "#hashrate > option",
-                (node) => node.map((th) => th.innerText)
+                (node: InnerTextInterface[]) =>
+                  node.map((th: InnerTextInterface) => th.innerText)
               );
 
-              const efficiencyHashrateOpt = hashrateOptionForEff.filter((t) => {
-                return t.match(/th/i) && parseInt(t.charAt(0));
-              });
+              const efficiencyHashrateOpt = hashrateOptionForEff.filter(
+                (t: string) => {
+                  return t.match(/th/i) && parseInt(t.charAt(0));
+                }
+              );
 
               for (const th of efficiencyHashrateOpt.values()) {
                 await page.select("select#hashrate", th);
 
-                const asicPrice = await page.$$eval(
+                let asicPrice = await page.$$eval(
                   "div > div > form > div > div > div > span > span > bdi",
-                  (node) => node.map((price) => price.innerText)
+                  (node: InnerTextInterface[]) =>
+                    node.map((price: InnerTextInterface) => price.innerText)
                 );
+
+                if (asicPrice.length === 0) {
+                  asicPrice = await page.$$eval(
+                    "div > div.summary.entry-summary > p > span > bdi",
+                    (node: InnerTextInterface[]) =>
+                      node.map((price: InnerTextInterface) => price.innerText)
+                  );
+                }
 
                 const model = `${asicModel} ${th.split(/th/i)[0]}T ${
                   effic.split(/j\/th/i)[0]
@@ -222,7 +257,7 @@ const mfbScraper = async () => {
                   watts: convertPowerDraw(effic, th),
                   efficiency: Number(effic.split(/j\/th/i)[0]),
                   price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-                  date: moment().format("MM-DD-YYYY"),
+                  date: moment(new Date()).format("MM-DD-YYYY"),
                   id: sha1(id),
                 });
               }
@@ -238,11 +273,9 @@ const mfbScraper = async () => {
     );
   });
 
-  results.filter((data) => data.length > 0);
+  results.filter((data: string | any[]) => data.length > 0);
   let flattened = [].concat(...results);
   return flattened;
 };
 
-module.exports = {
-  mfbScraper,
-};
+export default mfbScraper;
