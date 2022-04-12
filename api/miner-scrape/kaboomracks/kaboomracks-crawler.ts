@@ -11,7 +11,7 @@ export interface kaboomracksInterface {
   watts: number;
   efficiency: number;
   price: number;
-  date: string;
+  date: Date;
   id: string;
 }
 
@@ -82,27 +82,31 @@ const kaboomracksScraper = async () => {
               .join(" ")
           )
         ).isValid()
-          ? moment(
-              new Date(
-                minerData
-                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
-                  .replace(/[^\x20-\x7E]/g, "")
-                  .split(" ")
-                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-                  .join(" ")
-              )
-            ).format("MM-DD-YYYY")
-          : moment(
-              new Date(
-                minerData
-                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
-                  .replace(/[^\x20-\x7E]/g, "")
-                  .replace("| ", "")
-                  .split(" ")
-                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-                  .join(" ")
-              )
-            ).format("MM-DD-YYYY");
+          ? new Date(
+              moment(
+                new Date(
+                  minerData
+                    .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+                    .replace(/[^\x20-\x7E]/g, "")
+                    .split(" ")
+                    .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                    .join(" ")
+                )
+              ).format("MM-DD-YYYY")
+            )
+          : new Date(
+              moment(
+                new Date(
+                  minerData
+                    .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
+                    .replace(/[^\x20-\x7E]/g, "")
+                    .replace("| ", "")
+                    .split(" ")
+                    .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                    .join(" ")
+                )
+              ).format("MM-DD-YYYY")
+            );
 
         //this will find between the given strings, for exmample here:
         //will find between Antminer S and for
@@ -151,15 +155,17 @@ const kaboomracksScraper = async () => {
           //had to add this for inconsistant post with S9s with th like (13.5Th/s)
           //and had to fix how the date was pulled. Still might have to add another
           //statement for when just Th/s is used
-          let date = minerData
-            .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)![0]
-            //removes the invalid chars
-            .replace(/[^\x20-\x7E]/g, "")
-            .split(" ")
-            .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-            .join(" ");
+          let date = new Date(
+            minerData
+              .match(/(?<=#usa [|]\s+).*?(?=\s+Miners)/gs)![0]
+              //removes the invalid chars
+              .replace(/[^\x20-\x7E]/g, "")
+              .split(" ")
+              .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+              .join(" ")
+          );
 
-          date = moment(new Date(date)).format("MM-DD-YYYY");
+          date = new Date(moment(new Date(date)).format("MM-DD-YYYY"));
           let th = Number(
             asicModel
               .split(" ")
@@ -201,14 +207,16 @@ const kaboomracksScraper = async () => {
         let price = Number(
           minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
         );
-        let date = minerData
-          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
-          .replace(/[^\x20-\x7E]/g, "")
-          .split(" ")
-          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-          .join(" ");
+        let date = new Date(
+          minerData
+            .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+            .replace(/[^\x20-\x7E]/g, "")
+            .split(" ")
+            .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+            .join(" ")
+        );
 
-        date = moment(new Date(date)).format("MM-DD-YYYY");
+        date = new Date(moment(new Date(date)).format("MM-DD-YYYY"));
 
         let asicModel = minerData.match(
           /(?=Whatsminer M\s*).*?(?=\s*for)/gs
@@ -270,27 +278,31 @@ const kaboomracksScraper = async () => {
               .join(" ")
           )
         ).isValid()
-          ? moment(
-              new Date(
-                minerData
-                  .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
-                  .replace(/[^\x20-\x7E]/g, "")
-                  .split(" ")
-                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-                  .join(" ")
-              )
-            ).format("MM-DD-YYYY")
-          : moment(
-              new Date(
-                minerData
-                  .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
-                  .replace(/[^\x20-\x7E]/g, "")
-                  .replace("| ", "")
-                  .split(" ")
-                  .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-                  .join(" ")
-              )
-            ).format("MM-DD-YYYY");
+          ? new Date(
+              moment(
+                new Date(
+                  minerData
+                    .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+                    .replace(/[^\x20-\x7E]/g, "")
+                    .split(" ")
+                    .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                    .join(" ")
+                )
+              ).format("MM-DD-YYYY")
+            )
+          : new Date(
+              moment(
+                new Date(
+                  minerData
+                    .match(/(?<=usa\s+).*?(?=\s+Miners for)/gs)![0]
+                    .replace(/[^\x20-\x7E]/g, "")
+                    .replace("| ", "")
+                    .split(" ")
+                    .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+                    .join(" ")
+                )
+              ).format("MM-DD-YYYY")
+            );
 
         let asicModel = minerData?.match(/(?=Canaan A\s*).*?(?=\s*for)/gs)![0];
         let asicSearchName = minerData

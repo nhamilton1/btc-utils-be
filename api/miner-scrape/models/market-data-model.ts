@@ -12,7 +12,7 @@ type marketDataType = {
   vendor: string;
   model: string;
   price: number;
-  date: string;
+  date: Date;
 };
 
 async function createMarketData(

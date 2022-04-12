@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "historical_prices" (
-    "date" TEXT NOT NULL,
+    "date" DATE NOT NULL,
     "btc_price" DOUBLE PRECISION NOT NULL,
     "gld_price" DOUBLE PRECISION,
     "spy_price" DOUBLE PRECISION,
@@ -24,7 +24,7 @@ CREATE TABLE "market_data" (
     "vendor" TEXT NOT NULL,
     "model" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "date" TEXT NOT NULL,
+    "date" DATE NOT NULL,
 
     CONSTRAINT "market_data_pkey" PRIMARY KEY ("id")
 );

@@ -9,7 +9,7 @@ export interface minefarmbuyDataInterface {
   watts: number;
   efficiency: number;
   price: number;
-  date: string;
+  date: Date;
   id: string;
 }
 
@@ -178,7 +178,7 @@ const minefarmbuyScraper = async () => {
                     ifNoPriceFromAsicPrice[0].replace("$", "").replace(",", "")
                   )
                 : Number(asicPrice[0].replace("$", "").replace(",", "")),
-            date: moment(new Date()).format("MM-DD-YYYY"),
+            date: new Date(moment(new Date()).format("MM-DD-YYYY")),
             id: sha1(id),
           });
         }
@@ -230,7 +230,7 @@ const minefarmbuyScraper = async () => {
               watts: convertPowerDraw(effic, th),
               efficiency: Number(effic.split(/j\/th/i)[0]),
               price: Number(asicPrice[0].replace("$", "").replace(",", "")),
-              date: moment(new Date()).format("MM-DD-YYYY"),
+              date: new Date(moment(new Date()).format("MM-DD-YYYY")),
               id: sha1(id),
             });
           }

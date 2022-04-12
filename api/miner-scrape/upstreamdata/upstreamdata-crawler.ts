@@ -15,7 +15,7 @@ interface upstreamdataInterface {
   efficiency: number;
   watts: number;
   price: number;
-  date: string;
+  date: Date;
   id: string;
 }
 
@@ -89,7 +89,7 @@ const upStreamDataCrawler = async () => {
 
       const vendor: string = "upstreamdata";
 
-      const date: string = moment(new Date()).format("MM-DD-YYYY");
+      const date: Date = new Date (moment().format("MM-DD-YYYY"));
 
       const th: number = Number(asicModel.split(" ").pop()?.slice(0, -1));
 
