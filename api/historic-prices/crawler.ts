@@ -3,27 +3,27 @@ import { load } from "cheerio";
 import moment from "moment";
 
 interface btcDataInterface {
-  btc_date: string;
+  btc_date: Date;
   btc_price: number;
 }
 
 interface spyDataInterace {
-  spy_date: string;
+  spy_date: Date;
   spy_price: number;
 }
 
 interface gldDataInterace {
-  gld_date: string;
+  gld_date: Date;
   gld_price: number;
 }
 
 interface formattedSpyInterface {
-  spy_date: string;
+  spy_date: Date;
   spy_price: null | number;
 }
 
 interface formattedGldInterface {
-  gld_date: string;
+  gld_date: Date;
   gld_price: null | number;
 }
 
@@ -61,7 +61,7 @@ export const scrape = async (mostRecentDate: Date) => {
         new Date(mostRecentDate).getTime() / 1000
       ) {
         btcData.push({
-          btc_date: btcDate,
+          btc_date: new Date(btcDate),
           btc_price: parseFloat(btcPrice.replace(/,/g, "")),
         });
       }
@@ -70,12 +70,12 @@ export const scrape = async (mostRecentDate: Date) => {
     $spy(
       "#Col1-1-HistoricalDataTable-Proxy > section > div > table > tbody > tr > td:nth-child(1)"
     ).each((_idx, el) => {
-      let dateChecker: string[] = [];
-      let spyDate: string = $spy(el).text();
+      let dateChecker: Date[] = [];
+      let spyDate: Date = new Date ($spy(el).text());
       let spyPrice = $spy(el).next().next().next().next().next().text();
 
       //checks for the dividend dupe date
-      dateChecker.push(spyDate);
+      dateChecker.push(new Date(spyDate));
       if (
         new Date(spyDate).getTime() / 1000 >
         new Date(mostRecentDate).getTime() / 1000
@@ -83,7 +83,7 @@ export const scrape = async (mostRecentDate: Date) => {
         dateChecker.map((x) =>
           spyData.map((s) => s.spy_date).indexOf(x) === -1
             ? spyData.push({
-                spy_date: spyDate,
+                spy_date: new Date(spyDate),
                 spy_price: spyPrice !== null ? parseFloat(spyPrice) : spyPrice,
               })
             : ""
@@ -102,7 +102,7 @@ export const scrape = async (mostRecentDate: Date) => {
         new Date(mostRecentDate).getTime() / 1000
       ) {
         gldData.push({
-          gld_date: gldDate,
+          gld_date: new Date(gldDate),
           gld_price: gldPrice !== null ? parseFloat(gldPrice) : gldPrice,
         });
       }
@@ -144,7 +144,7 @@ export const scrape = async (mostRecentDate: Date) => {
     //formats data found to obj
     const data = btcData.map((date, idx) => {
       return {
-        date: moment(new Date(btcData[idx].btc_date)).format("YYYY-MM-DD"),
+        date: new Date(btcData[idx].btc_date),
         btc_price: btcData[idx].btc_price,
         spy_price: formattedSpy[idx].spy_price,
         gld_price: formattedGld[idx].gld_price,

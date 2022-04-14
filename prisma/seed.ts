@@ -46,10 +46,10 @@ const main = async () => {
 
   const data = btc.map((_date: any, idx: number) => {
     return {
-      date: btc[idx].btc_date,
-      btc_price: btc[idx].btc_price,
-      spy_price: newSpy[idx].spy_price,
-      gld_price: newGld[idx].gld_price,
+      date: new Date(btc[idx].btc_date),
+      btc_price: Number(btc[idx].btc_price.toFixed(2)),
+      spy_price: Number(newSpy[idx].spy_price?.toFixed(2)),
+      gld_price: Number(newGld[idx].gld_price?.toFixed(2)),
     };
   });
 

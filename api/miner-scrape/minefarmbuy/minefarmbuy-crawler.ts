@@ -215,13 +215,16 @@ const minefarmbuyScraper = async () => {
               );
             }
 
-            const model = `${asicModel} ${th.split(/th/i)[0]}T ${
+            let model = `${asicModel} ${th.split(/th/i)[0]}T ${
               effic.split(/j\/th/i)[0]
             }J/th`;
 
             let id = `minefarmbuy ${model} ${Number(
               asicPrice[0].replace("$", "").replace(",", "")
             )}`;
+            
+            // this will remove the j/th, still debating if i want to do this.
+            // model = model.split(" ").slice(0,-1).join(" ")
 
             minefarmbuyData.push({
               vendor: "minefarmbuy",

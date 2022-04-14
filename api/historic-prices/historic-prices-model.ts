@@ -2,25 +2,32 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface lastRowInterface {
+  date: string
+}
+
 export const getLastRow = async () => {
-  const lastRow = await prisma.historicalPrices.findMany({
-    orderBy: { date: "desc" },
-    take: 1,
-  });
+  let lastRow: lastRowInterface = await prisma.$queryRaw`
+  SELECT date FROM historical_prices
+  ORDER BY date DESC  
+  LIMIT 1
+  `
   return lastRow;
 };
 
 type addHistoryData = {
-  date: string;
+  date: Date;
   btc_price: number;
-  spy_price: number | null;
-  gld_price: number | null;
+  spy_price?: number | null;
+  gld_price?: number | null;
 };
 
 async function createHistoricalPrices(
   data: Prisma.HistoricalPricesCreateManyInput[]
 ): Promise<Prisma.BatchPayload> {
-  return await prisma.historicalPrices.createMany({ data });
+  return await prisma.historicalPrices.createMany({
+    data,
+  });
 }
 
 export const add = async (item: addHistoryData[]) => {
@@ -42,7 +49,7 @@ export const sqlRawFindBetweenDates = async (
     MAX(spy_price) OVER( PARTITION BY spy ORDER BY date ROWS UNBOUNDED PRECEDING ) AS spy_price,
     MAX(gld_price) OVER( PARTITION BY gld ORDER BY date ROWS UNBOUNDED PRECEDING ) AS gld_price
     FROM historical_prices
-    WHERE date BETWEEN ${startDate} and ${endDate}
+    WHERE date BETWEEN ${new Date(startDate)} and ${new Date(endDate)}
     ORDER BY date ASC
   `;
 };

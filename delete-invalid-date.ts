@@ -11,12 +11,10 @@ if (process.env.DATABASE_URL) {
 const prisma = new PrismaClient();
 
 const getInvalidDate = async () => {
-  return await prisma.marketData.deleteMany({
+  return await prisma.marketData.delete({
     where: {
-      date: {
-        lt: "Invalid date",
-      },
-    },
+      id: "insert id here"
+    }
   });
 };
 
