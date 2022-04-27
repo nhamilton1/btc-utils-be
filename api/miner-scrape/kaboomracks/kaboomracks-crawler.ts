@@ -127,7 +127,7 @@ const kaboomracksScraper = async () => {
               )[0]
               .replace("T", "")
           );
-
+            
           const asicName = asicModel.match(/(?=Antminer S\s*).*?(?=\s*T)/gs);
 
           //gets the watts from the asic watt list, remove the t from the th var
