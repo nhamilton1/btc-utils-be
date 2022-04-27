@@ -11,6 +11,14 @@ export const asicWattList = {
     104: 3068,
     100: 3050,
     96: 2832,
+    90: 2655
+  },
+  "Bitmain Antminer S19j": {
+    wt: 29.5,
+    104: 3068,
+    100: 3050,
+    96: 2832,
+    90: 2655
   },
   "Bitmain Antminer S19": {
     wt: 30,
@@ -55,6 +63,14 @@ export const asicWattList = {
   "Whatsminer M30S++": {
     wt: 31,
     106: 3472,
+  },
+  "Whatsminer M20s": {
+    wt: 48,
+    62: 2976,
+  },
+  "Whatsminer M20S": {
+    wt: 48,
+    62: 2976,
   },
   "Canaan Avalonminer 1066": {
     wt: 65,
