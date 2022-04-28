@@ -60,10 +60,7 @@ const upStreamDataCrawler = async () => {
       // .slice(0, -3) removes the h/s from the title
       let asicModel: string = await page.$eval(
         "div > div.summary.entry-summary > h1",
-        (el: { innerText: string }): string =>
-          el.innerText.includes("h/s")
-            ? el.innerText.replace(/Th\/s/i, "")
-            : el.innerText.replace(/th/i, "")
+        (el: { innerText: string }): string => el.innerText
       );
 
       //puts a space between S19j and Pro
@@ -94,7 +91,15 @@ const upStreamDataCrawler = async () => {
 
       const date: Date = new Date(moment().format("MM-DD-YYYY"));
 
-      const th: number = Number(asicModel.split(" ").pop());
+      const th: number = Number(
+        asicModel.includes("h/s")
+          ? asicModel.replace(/Th\/s/i, "").split(" ").pop()
+          : asicModel.replace(/th/i, "").split(" ").pop()
+      );
+
+     asicModel = asicModel.includes("h/s")
+      ? asicModel.replace(/Th\/s/i, "T")
+      : asicModel.replace(/th/i, "T")
 
       const id = sha1(`upstreamdata ${asicModel} ${price}`);
 
@@ -110,10 +115,11 @@ const upStreamDataCrawler = async () => {
       });
     }
     await browser.close();
+    console.log(upstreamdataAsics);
     return upstreamdataAsics;
   } catch (err) {
     console.log("Could not create a browser instance => : ", err);
   }
 };
-
+upStreamDataCrawler();
 export default upStreamDataCrawler;
