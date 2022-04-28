@@ -60,7 +60,10 @@ const upStreamDataCrawler = async () => {
       // .slice(0, -3) removes the h/s from the title
       let asicModel: string = await page.$eval(
         "div > div.summary.entry-summary > h1",
-        (el: { innerText: string }): string => el.innerText.slice(0, -3)
+        (el: { innerText: string }): string =>
+          el.innerText.includes("h/s")
+            ? el.innerText.replace(/Th\/s/i, "")
+            : el.innerText.replace(/th/i, "")
       );
 
       //puts a space between S19j and Pro
@@ -89,7 +92,7 @@ const upStreamDataCrawler = async () => {
 
       const vendor: string = "upstreamdata";
 
-      const date: Date = new Date (moment().format("MM-DD-YYYY"));
+      const date: Date = new Date(moment().format("MM-DD-YYYY"));
 
       const th: number = Number(asicModel.split(" ").pop()?.slice(0, -1));
 
