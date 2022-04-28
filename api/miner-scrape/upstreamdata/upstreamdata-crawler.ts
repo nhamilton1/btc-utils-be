@@ -94,7 +94,7 @@ const upStreamDataCrawler = async () => {
 
       const date: Date = new Date(moment().format("MM-DD-YYYY"));
 
-      const th: number = Number(asicModel.split(" ").pop()?.slice(0, -1));
+      const th: number = Number(asicModel.split(" ").pop());
 
       const id = sha1(`upstreamdata ${asicModel} ${price}`);
 
