@@ -115,11 +115,10 @@ const upStreamDataCrawler = async () => {
       });
     }
     await browser.close();
-    console.log(upstreamdataAsics);
     return upstreamdataAsics;
   } catch (err) {
     console.log("Could not create a browser instance => : ", err);
   }
 };
-upStreamDataCrawler();
+
 export default upStreamDataCrawler;

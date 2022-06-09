@@ -82,6 +82,10 @@ export const asicWattList = {
     62: 2976,
     60: 3120,
   },
+  "Whatsminer M21S": {
+    wt: 66,
+    62: 3300,
+  },
   "Canaan Avalonminer 1066": {
     wt: 65,
     50: 3250,
