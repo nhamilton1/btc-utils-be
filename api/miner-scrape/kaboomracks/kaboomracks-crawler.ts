@@ -207,14 +207,37 @@ const kaboomracksScraper = async () => {
         let price = Number(
           minerData.match(/(?<=[$]\s*).*?(?=\s*each —)/gs)![0]
         );
-        let date = new Date(
-          minerData
+    
+        //#TODO: Clean tihs up
+        //this is ugly as fuck and its too early to try to clean this up
+        let date = new Date(minerData
+          .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+          .replace(/[^\x20-\x7E]/g, "")
+          .split(" ")
+          .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+          .join(" ")) instanceof Date && !!new Date(minerData
             .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
             .replace(/[^\x20-\x7E]/g, "")
             .split(" ")
             .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
-            .join(" ")
-        );
+            .join(" ")).getDate() ? new Date (minerData
+              .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+              .replace(/[^\x20-\x7E]/g, "")
+              .split(" ")
+              .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+              .join(" ").split("|")[0]) : new Date()
+
+        // date = date instanceof Date && !!date.getDate() ? 
+        //  new Date (minerData
+        //     .match(/(?<=[|]\s+).*?(?=\s+Miners)/gs)![0]
+        //     .replace(/[^\x20-\x7E]/g, "")
+        //     .split(" ")
+        //     .map((day) => (day.includes(",") ? day.slice(0, -3) : day))
+        //     .join(" ").split("|")[0]) : new Date()
+
+      
+        
+
 
         date = new Date(moment(new Date(date)).format("MM-DD-YYYY"));
 

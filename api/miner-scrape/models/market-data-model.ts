@@ -22,5 +22,14 @@ async function createMarketData(
 }
 
 export const addMarketData = async (item: marketDataType[]) => {
-  return await createMarketData(item);
+  return await prisma.marketData.createMany({
+    data: item.map((x) => ({
+      vendor: x.vendor,
+      model: x.model,
+      price: x.price,
+      date: x.date,
+      id: x.id,
+    }))
+  })
 };
+
