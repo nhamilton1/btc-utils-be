@@ -118,6 +118,10 @@ const kaboomracksScraper = async () => {
           .slice(0, -1)
           .join(" ");
 
+          // console.log(asicModel)
+          // console.log(asicSearchName)
+
+
         if (asicModel.includes("T") && !asicModel.includes("(")) {
           let th = Number(
             asicModel
@@ -258,6 +262,10 @@ const kaboomracksScraper = async () => {
             )[0]
             .replace("T", "")
         );
+
+
+        // console.log(asicModel)
+        // console.log(asicSearchName)
 
         const asicName = asicModel.match(/(?=Whatsminer M\s*).*?(?=\s*T)/gs);
 

@@ -38,6 +38,14 @@ export const asicWattList = {
     106: 3127,
     102: 3009,
   },
+  "Bitmain Antminer S19 XP": {
+    wt: 21.5,
+    140: 3010,
+  },
+  "Whatsminer M50": {
+    wt: 29,
+    118: 3422,
+  },
   "Whatsminer M30S": {
     wt: 42,
     102: 3264,
