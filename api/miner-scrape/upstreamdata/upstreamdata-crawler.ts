@@ -46,11 +46,16 @@ const upStreamDataCrawler = async () => {
     });
 
     //gets all the urls on the btc asic product list page
-    const urls = await page.$$eval(
+    let urls = await page.$$eval(
       "#main > ul > li > a:first-child",
       (title: { href: string }[]): string[] =>
         title.map((url: { href: string }): string => url.href)
     );
+
+    // remove any url that contains the word or "bundle"
+    // will handle bundles at a later time
+    urls = urls.filter((url: string) => !url.includes("bundle"));
+
 
     const upstreamdataAsics: upstreamdataInterface[] = [];
 
@@ -120,5 +125,7 @@ const upStreamDataCrawler = async () => {
     console.log("Could not create a browser instance => : ", err);
   }
 };
+
+upStreamDataCrawler()
 
 export default upStreamDataCrawler;
