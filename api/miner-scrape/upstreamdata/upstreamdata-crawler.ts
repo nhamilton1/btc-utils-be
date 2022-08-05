@@ -86,11 +86,23 @@ const upStreamDataCrawler = async () => {
           Number(el.innerText.replace(/[^\d.-]/g, ""))
       );
 
-      const price: number = await page.$eval(
-        "div > div.summary.entry-summary > p.price > span > bdi",
+      let price: number = await page.$eval(
+        ".price",
         (el: { innerText: string }): number =>
           Number(el.innerText.replace(/[^\d.-]/g, ""))
       );
+
+      /*
+      * added this because upsteamdata had a sale, struck out the price and put another
+      */
+      if (isNaN(price)) {
+        console.log('======================made it here=====================')
+        price = await page.$eval(
+          ".price",
+          (el: { innerText: string }) =>
+            Number(el.innerText.split(' ')[1].replace(/[^\d.-]/g, ""))
+        );
+      }
 
       const vendor: string = "upstreamdata";
 
@@ -102,9 +114,9 @@ const upStreamDataCrawler = async () => {
           : asicModel.replace(/th/i, "").split(" ").pop()
       );
 
-     asicModel = asicModel.includes("h/s")
-      ? asicModel.replace(/Th\/s/i, "T")
-      : asicModel.replace(/th/i, "T")
+      asicModel = asicModel.includes("h/s")
+        ? asicModel.replace(/Th\/s/i, "T")
+        : asicModel.replace(/th/i, "T")
 
       const id = sha1(`upstreamdata ${asicModel} ${price}`);
 
@@ -125,6 +137,5 @@ const upStreamDataCrawler = async () => {
     console.log("Could not create a browser instance => : ", err);
   }
 };
-
 
 export default upStreamDataCrawler;
