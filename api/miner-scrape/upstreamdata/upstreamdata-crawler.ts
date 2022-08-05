@@ -126,6 +126,5 @@ const upStreamDataCrawler = async () => {
   }
 };
 
-upStreamDataCrawler()
 
 export default upStreamDataCrawler;
